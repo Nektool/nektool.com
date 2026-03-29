@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Términos de Servicio — Nektool</title>
+  <meta name="description" content="Términos de servicio del sitio corporativo nektool.com. Nektool es una empresa de software MicroSaaS para México y Estados Unidos." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='4' y1='6' x2='28' y2='26' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M6 26V6H10.5L21.5 20V6H26V26H21.5L10.5 12V26H6Z' fill='url(%23g)'/%3E%3C/svg%3E" />
+  <style>
+    /* ─── INTER SELF-HOSTED (privacy: no Google CDN requests) ─── */
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 300 800;
+      font-display: swap;
+      src: url('./fonts/inter-300-800-cyrillic-ext.woff2') format('woff2');
+      unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 300 800;
+      font-display: swap;
+      src: url('./fonts/inter-300-800-cyrillic.woff2') format('woff2');
+      unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 300 800;
+      font-display: swap;
+      src: url('./fonts/inter-300-800-greek-ext.woff2') format('woff2');
+      unicode-range: U+1F00-1FFF;
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 300 800;
+      font-display: swap;
+      src: url('./fonts/inter-300-800-greek.woff2') format('woff2');
+      unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 300 800;
+      font-display: swap;
+      src: url('./fonts/inter-300-800-vietnamese.woff2') format('woff2');
+      unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 300 800;
+      font-display: swap;
+      src: url('./fonts/inter-300-800-latin-ext.woff2') format('woff2');
+      unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 300 800;
+      font-display: swap;
+      src: url('./fonts/inter-300-800-latin.woff2') format('woff2');
+      unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0a0a0f;
+      --bg-card:   #0f0f17;
+      --bg-surface:#13131e;
+      --border:    rgba(255,255,255,0.07);
+      --border-hi: rgba(255,255,255,0.14);
+      --text:      #f0f0f5;
+      --muted:     #8b8b9e;
+      --muted-hi:  #ababbe;
+      --accent:    #6366f1;
+      --accent-hi: #818cf8;
+      --accent-glow: rgba(99,102,241,0.18);
+      --green:     #10b981;
+      --green-bg:  rgba(16,185,129,0.10);
+      --amber:     #f59e0b;
+      --amber-bg:  rgba(245,158,11,0.10);
+      --radius:    12px;
+      --radius-lg: 20px;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --transition: 0.18s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.15;
+    }
+    .orb-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #6366f1 0%, transparent 70%);
+      top: -150px; left: -150px;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      background: rgba(10,10,15,0.75);
+    }
+    .nav-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+    .logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logo-icon {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+    .back-link {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color var(--transition);
+    }
+    .back-link:hover { color: var(--text); }
+    .back-link svg { width: 14px; height: 14px; }
+
+    /* ─── LAYOUT ─── */
+    .page-wrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 64px 24px 96px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .content-layout {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+    }
+
+    .main-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar-nav {
+      width: 220px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 80px;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .sidebar-nav::-webkit-scrollbar { display: none; }
+    .sidebar-nav::after {
+      content: '';
+      position: sticky;
+      bottom: 0;
+      display: block;
+      height: 48px;
+      margin-top: -48px;
+      background: linear-gradient(to bottom, transparent, var(--bg));
+      pointer-events: none;
+    }
+
+    .sidebar-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--muted);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .sidebar-list a {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--muted);
+      text-decoration: none;
+      transition: background var(--transition), color var(--transition);
+      line-height: 1.4;
+      border: 1px solid transparent;
+    }
+    .sidebar-list a:hover {
+      color: var(--muted-hi);
+      background: rgba(255,255,255,0.04);
+      text-decoration: none;
+    }
+    .sidebar-list a.active {
+      color: var(--accent-hi);
+      background: rgba(99,102,241,0.08);
+      border-color: rgba(99,102,241,0.15);
+    }
+    .sidebar-num {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent);
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+    .sidebar-list a.active .sidebar-num {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar-nav { display: none; }
+      .content-layout { display: block; }
+      .page-wrapper { max-width: 860px; }
+    }
+
+    /* ─── HEADER ─── */
+    .page-header {
+      margin-bottom: 48px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+    .page-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(99,102,241,0.08);
+      border: 1px solid rgba(99,102,241,0.20);
+      color: var(--accent-hi);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 99px;
+      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .page-title {
+      font-size: clamp(28px, 4vw, 40px);
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .page-meta {
+      color: var(--muted);
+      font-size: 14px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .page-meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ─── CONTENT ─── */
+    .legal-content {
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+    }
+
+    .section-number {
+      display: inline-block;
+      background: rgba(99,102,241,0.12);
+      color: var(--accent-hi);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 99px;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .section h2 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .section p {
+      color: var(--muted-hi);
+      font-size: 15px;
+      line-height: 1.75;
+      margin-bottom: 14px;
+    }
+    .section p:last-child { margin-bottom: 0; }
+
+    .section ul, .section ol {
+      color: var(--muted-hi);
+      font-size: 15px;
+      line-height: 1.75;
+      padding-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .highlight-box {
+      background: rgba(99,102,241,0.06);
+      border: 1px solid rgba(99,102,241,0.15);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-top: 16px;
+    }
+    .highlight-box p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--muted-hi);
+    }
+    .highlight-box strong {
+      color: var(--accent-hi);
+    }
+
+    .amber-box {
+      background: var(--amber-bg);
+      border: 1px solid rgba(245,158,11,0.20);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin-top: 16px;
+    }
+    .amber-box p {
+      margin: 0;
+      font-size: 14px;
+      color: #fbbf24;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .product-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .product-card .product-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .product-card .product-url {
+      font-size: 12px;
+      color: var(--accent-hi);
+      text-decoration: none;
+    }
+    .product-card .product-url:hover {
+      text-decoration: underline;
+    }
+    .product-card .product-desc {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    a { color: var(--accent-hi); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    strong { color: var(--text); font-weight: 600; }
+
+    /* ─── LANG TOGGLE ─── */
+    .lang-section {
+      margin-top: 56px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+    }
+    .lang-section .lang-label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .lang-section .lang-label::before {
+      content: '';
+      display: inline-block;
+      width: 16px;
+      height: 1px;
+      background: var(--border-hi);
+    }
+
+    .en-content .section {
+      border-color: rgba(255,255,255,0.05);
+    }
+
+    /* ─── FOOTER ─── */
+    .legal-footer {
+      margin-top: 56px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: gap;
+      gap: 16px;
+    }
+    .legal-footer p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .legal-footer-links {
+      display: flex;
+      gap: 20px;
+    }
+    .legal-footer-links a {
+      color: var(--muted);
+      font-size: 13px;
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    .legal-footer-links a:hover { color: var(--text); }
+
+    @media (max-width: 640px) {
+      .section { padding: 24px 20px; }
+      .page-wrapper { padding: 40px 16px 72px; }
+      .legal-footer { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="orb orb-1"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="https://nektool.com" class="logo">
+        <svg class="logo-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+          <defs>
+            <linearGradient id="g" x1="4" y1="6" x2="28" y2="26" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#6366f1"/>
+              <stop offset="100%" stop-color="#8b5cf6"/>
+            </linearGradient>
+          </defs>
+          <path d="M6 26V6H10.5L21.5 20V6H26V26H21.5L10.5 12V26H6Z" fill="url(#g)"/>
+        </svg>
+        Nektool
+      </a>
+      <a href="https://nektool.com" class="back-link">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M10 3L5 8l5 5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Regresar al sitio
+      </a>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="page-wrapper">
+
+    <div class="page-header">
+      <div class="page-label">Legal</div>
+      <h1 class="page-title">Términos de Servicio</h1>
+      <div class="page-meta">
+        <span>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5" stroke-linecap="round"/></svg>
+          Última actualización: 29 de marzo de 2026
+        </span>
+        <span>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2a6 6 0 100 12A6 6 0 008 2z"/><path d="M5.5 8.5c.5.8 1.4 1.5 2.5 1.5s2-.7 2.5-1.5" stroke-linecap="round"/></svg>
+          Aplica a: nektool.com
+        </span>
+        <span>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12v9H2z" stroke-linejoin="round"/><path d="M5 4V3a1 1 0 011-1h4a1 1 0 011 1v1" stroke-linejoin="round"/></svg>
+          Idioma principal: Español
+        </span>
+      </div>
+    </div>
+
+    <!-- LAYOUT CON SIDEBAR -->
+    <div class="content-layout">
+
+      <!-- SIDEBAR -->
+      <nav class="sidebar-nav" aria-label="Índice de secciones">
+        <div class="sidebar-title">Contenido</div>
+        <ul class="sidebar-list">
+          <li><a href="#s01"><span class="sidebar-num">01</span> Identificación del Responsable</a></li>
+          <li><a href="#s02"><span class="sidebar-num">02</span> Naturaleza del Sitio</a></li>
+          <li><a href="#s03"><span class="sidebar-num">03</span> Propiedad Intelectual</a></li>
+          <li><a href="#s04"><span class="sidebar-num">04</span> Uso Aceptable</a></li>
+          <li><a href="#s05"><span class="sidebar-num">05</span> Limitación de Responsabilidad</a></li>
+          <li><a href="#s06"><span class="sidebar-num">06</span> Servicios Independientes</a></li>
+          <li><a href="#s07"><span class="sidebar-num">07</span> Modificaciones</a></li>
+          <li><a href="#s08"><span class="sidebar-num">08</span> Ley y Jurisdicción</a></li>
+          <li><a href="#s09"><span class="sidebar-num">09</span> Contacto</a></li>
+        </ul>
+      </nav>
+
+      <!-- MAIN -->
+      <div class="main-content">
+
+    <!-- SPANISH VERSION -->
+    <div class="legal-content">
+
+      <div class="section" id="s01">
+        <span class="section-number">01</span>
+        <h2>Identificación del Responsable</h2>
+        <p>
+          El presente sitio web <strong>nektool.com</strong> es operado por <strong>Nektool</strong>, empresa de software operada conforme a las leyes de México bajo el régimen de persona física con actividad empresarial (PFAE), con domicilio en la República Mexicana y correo de contacto: <a href="#" class="email-link"><span class="email-text"></span></a>.
+        </p>
+        <p>
+          La marca comercial <strong>Nektool</strong> y los productos desarrollados bajo esta marca son propiedad de Nektool. El registro y protección de la marca está en proceso ante las autoridades competentes en México y Estados Unidos.
+        </p>
+        <div class="highlight-box">
+          <p><strong>Nota:</strong> nektool.com es un sitio corporativo informativo. Las transacciones, suscripciones y servicios se realizan exclusivamente en los subdominios de cada producto (por ejemplo: margenkit.nektool.com). Cada producto cuenta con sus propios Términos de Servicio específicos.</p>
+        </div>
+      </div>
+
+      <div class="section" id="s02">
+        <span class="section-number">02</span>
+        <h2>Naturaleza del Sitio y los Servicios</h2>
+        <p>
+          Nektool es una empresa de software como servicio (SaaS) especializada en el desarrollo de herramientas digitales de nicho (<em>MicroSaaS</em>) para vendedores en línea, emprendedores y pequeñas empresas de México y Estados Unidos.
+        </p>
+        <p>
+          <strong>nektool.com es exclusivamente un sitio informativo corporativo.</strong> Su finalidad es presentar la empresa, los productos disponibles y los canales de contacto. En este dominio no se realizan ventas, suscripciones, ni se recolectan datos personales de forma directa.
+        </p>
+        <p>Los productos de Nektool actualmente disponibles son:</p>
+        <div class="product-grid">
+          <div class="product-card">
+            <div class="product-name">MargenKit</div>
+            <a href="https://margenkit.nektool.com" class="product-url">margenkit.nektool.com</a>
+            <div class="product-desc">Calculadora de márgenes para vendedores de Mercado Libre.</div>
+          </div>
+        </div>
+        <p style="margin-top: 16px;">Cada producto opera bajo sus propios Términos de Servicio, Aviso de Privacidad y condiciones específicas de suscripción, disponibles en su respectivo subdominio.</p>
+      </div>
+
+      <div class="section" id="s03">
+        <span class="section-number">03</span>
+        <h2>Propiedad Intelectual</h2>
+        <p>
+          Todos los elementos de este sitio —incluyendo el nombre comercial <strong>Nektool</strong>, logotipos, diseño visual, textos, código fuente, iconografía, la denominación de los productos (MargenKit, entre otros) y cualquier otro contenido— son propiedad exclusiva de Nektool o están licenciados a su favor.
+        </p>
+        <p>Queda expresamente prohibido, sin autorización escrita previa:</p>
+        <ul>
+          <li>Reproducir, copiar o distribuir cualquier contenido del sitio con fines comerciales.</li>
+          <li>Usar la marca Nektool o los nombres de los productos en materiales propios de manera que genere confusión sobre su origen.</li>
+          <li>Modificar, descompilar o realizar ingeniería inversa sobre cualquier elemento del sitio o de los productos.</li>
+          <li>Utilizar los logotipos o elementos de identidad visual de Nektool sin autorización.</li>
+        </ul>
+        <p style="margin-top: 14px;">
+          Se permite citar el nombre Nektool o sus productos con fines informativos, periodísticos o académicos, siempre que se cite la fuente y no se genere confusión sobre la titularidad o el origen.
+        </p>
+        <div class="highlight-box">
+          <p>Para solicitudes de uso de marca, medios de comunicación o asociaciones comerciales, contacta a <strong><a href="#" class="email-link"><span class="email-text"></span></a></strong>.</p>
+        </div>
+      </div>
+
+      <div class="section" id="s04">
+        <span class="section-number">04</span>
+        <h2>Uso Aceptable del Sitio</h2>
+        <p>Al acceder a nektool.com, el usuario se compromete a utilizarlo de forma lícita y conforme a estos términos. Queda prohibido:</p>
+        <ul>
+          <li>Intentar acceder de forma no autorizada a sistemas, servidores o infraestructura asociada al sitio.</li>
+          <li>Realizar actividades que puedan interrumpir, dañar o sobrecargar el funcionamiento del sitio (ataques de denegación de servicio, scraping agresivo, etc.).</li>
+          <li>Utilizar el sitio para difundir contenido ilegal, engañoso o que infrinja derechos de terceros.</li>
+          <li>Suplantar la identidad de Nektool, sus productos o representantes.</li>
+        </ul>
+      </div>
+
+      <div class="section" id="s05">
+        <span class="section-number">05</span>
+        <h2>Limitación de Responsabilidad</h2>
+        <p>
+          El contenido publicado en nektool.com tiene carácter <strong>exclusivamente informativo</strong>. Nektool realiza esfuerzos razonables para mantener la información actualizada y precisa, pero no garantiza la exactitud, completitud o vigencia de los contenidos en todo momento.
+        </p>
+        <p>
+          Nektool no será responsable por daños directos, indirectos, incidentales o consecuentes que pudieran derivarse del uso o la imposibilidad de uso del sitio, incluyendo:
+        </p>
+        <ul>
+          <li>Decisiones de negocio tomadas con base en información publicada en el sitio.</li>
+          <li>Interrupciones temporales del servicio por mantenimiento, actualizaciones o causas de fuerza mayor.</li>
+          <li>Contenido de sitios externos enlazados desde nektool.com. Los enlaces a terceros se proporcionan como referencia informativa; Nektool no controla ni respalda el contenido de dichos sitios.</li>
+        </ul>
+        <div class="amber-box">
+          <p><strong>Importante:</strong> La limitación de responsabilidad descrita en esta cláusula aplica al sitio corporativo nektool.com. Los Términos de Servicio de cada producto (MargenKit, etc.) establecen sus propias condiciones, garantías y limitaciones de responsabilidad aplicables a los servicios de suscripción.</p>
+        </div>
+      </div>
+
+      <div class="section" id="s06">
+        <span class="section-number">06</span>
+        <h2>Productos como Servicios Independientes</h2>
+        <p>
+          Cada producto desarrollado por Nektool (actualmente MargenKit, y otros que se lancen en el futuro) opera como un servicio independiente con:
+        </p>
+        <ul>
+          <li>Sus propios <strong>Términos de Servicio</strong>, que regulan la suscripción, uso, cancelación y condiciones del servicio.</li>
+          <li>Su propio <strong>Aviso de Privacidad</strong>, que describe qué datos recolecta cada producto y cómo los trata.</li>
+          <li>Sus propias condiciones de <strong>facturación y pago</strong>.</li>
+        </ul>
+        <p style="margin-top: 14px;">
+          Al suscribirse a cualquier producto de Nektool, el usuario acepta los términos específicos de ese producto. Los presentes Términos de nektool.com coexisten con los de cada producto y aplican de forma complementaria en lo que no sea específicamente regulado por los términos del producto.
+        </p>
+      </div>
+
+      <div class="section" id="s07">
+        <span class="section-number">07</span>
+        <h2>Modificaciones</h2>
+        <p>
+          Nektool se reserva el derecho de modificar estos Términos de Servicio en cualquier momento. Las modificaciones entrarán en vigor desde el momento de su publicación en este sitio, con indicación de la fecha de actualización en el encabezado del documento.
+        </p>
+        <p>
+          El uso continuado del sitio nektool.com después de la publicación de cambios constituye la aceptación de los términos modificados. Se recomienda revisar periódicamente este documento.
+        </p>
+      </div>
+
+      <div class="section" id="s08">
+        <span class="section-number">08</span>
+        <h2>Ley Aplicable y Jurisdicción</h2>
+        <p>
+          Los presentes Términos de Servicio se rigen por las leyes de los <strong>Estados Unidos Mexicanos</strong>, en particular:
+        </p>
+        <ul>
+          <li>Código de Comercio</li>
+          <li>Ley Federal de Protección al Consumidor (LFPC)</li>
+          <li>Código Civil Federal</li>
+          <li>Ley de la Propiedad Industrial</li>
+          <li>Ley Federal del Derecho de Autor</li>
+        </ul>
+        <p style="margin-top: 14px;">
+          Para cualquier controversia derivada de la interpretación o aplicación de estos términos, las partes se someten a la jurisdicción de los <strong>Tribunales competentes del Estado de México, México</strong>, renunciando expresamente a cualquier otro fuero que pudiera corresponderles por razón de su domicilio presente o futuro.
+        </p>
+        <div class="highlight-box">
+          <p><strong>Para usuarios en Estados Unidos:</strong> En la medida en que la ley aplicable lo permita, estos términos también se interpretan conforme a prácticas comerciales estándar del sector tecnológico. Para transacciones específicas de productos que ofrezcan servicio en USA, aplican los términos de cada producto.</p>
+        </div>
+      </div>
+
+      <div class="section" id="s09">
+        <span class="section-number">09</span>
+        <h2>Contacto</h2>
+        <p>Para dudas, aclaraciones o solicitudes relacionadas con estos Términos de Servicio:</p>
+        <ul>
+          <li><strong>Correo electrónico:</strong> <a href="#" class="email-link"><span class="email-text"></span></a></li>
+          <li><strong>Sitio web:</strong> <a href="https://nektool.com">nektool.com</a></li>
+          <li><strong>Empresa:</strong> Nektool (PFAE, México)</li>
+        </ul>
+        <p style="margin-top: 14px;">Se atenderán solicitudes en un plazo máximo de <strong>15 días hábiles</strong>.</p>
+      </div>
+
+    </div>
+    <!-- END SPANISH -->
+
+    <!-- ENGLISH VERSION -->
+    <div class="lang-section">
+      <div class="lang-label">English version / Versión en inglés</div>
+
+      <div class="legal-content en-content">
+
+        <div class="section">
+          <span class="section-number">01</span>
+          <h2>Responsible Party</h2>
+          <p>
+            The website <strong>nektool.com</strong> is operated by <strong>Nektool</strong>, a software company operating under Mexican law as an individual entrepreneur (Persona Física con Actividad Empresarial). Contact: <a href="#" class="email-link"><span class="email-text"></span></a>.
+          </p>
+          <div class="highlight-box">
+            <p><strong>Note:</strong> nektool.com is an informational corporate website only. All transactions and subscriptions occur exclusively at individual product subdomains (e.g., margenkit.nektool.com), each governed by their own Terms of Service.</p>
+          </div>
+        </div>
+
+        <div class="section">
+          <span class="section-number">02</span>
+          <h2>Nature of the Website</h2>
+          <p>
+            Nektool is a MicroSaaS company that builds small, focused software tools for online sellers, entrepreneurs, and small businesses in Mexico and the United States.
+          </p>
+          <p>
+            <strong>nektool.com is a purely informational website.</strong> No sales, subscriptions, or direct personal data collection occur on this domain. Each Nektool product operates independently under its own Terms of Service, Privacy Notice, and billing conditions.
+          </p>
+        </div>
+
+        <div class="section">
+          <span class="section-number">03</span>
+          <h2>Intellectual Property</h2>
+          <p>
+            All elements of this site — including the <strong>Nektool</strong> brand name, logos, visual design, texts, source code, product names (MargenKit, etc.), and any other content — are the exclusive property of Nektool or are licensed to it.
+          </p>
+          <p>Without prior written authorization, the following are strictly prohibited:</p>
+          <ul>
+            <li>Reproducing, copying, or distributing any site content for commercial purposes.</li>
+            <li>Using the Nektool brand or product names in ways that create confusion about their origin.</li>
+            <li>Decompiling or reverse-engineering any element of the site or products.</li>
+            <li>Using Nektool logos or visual identity elements without authorization.</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <span class="section-number">04</span>
+          <h2>Limitation of Liability</h2>
+          <p>
+            Content on nektool.com is <strong>informational only</strong>. Nektool makes reasonable efforts to keep information accurate but does not guarantee completeness or currency at all times.
+          </p>
+          <p>
+            Nektool shall not be liable for any direct, indirect, incidental, or consequential damages arising from the use or inability to use this site, including business decisions based on information published herein, or content from third-party sites linked from nektool.com.
+          </p>
+        </div>
+
+        <div class="section">
+          <span class="section-number">05</span>
+          <h2>Governing Law and Jurisdiction</h2>
+          <p>
+            These Terms are governed by the laws of the <strong>United Mexican States</strong>. Any disputes shall be submitted to the competent courts of <strong>Estado de Mexico, Mexico</strong>. For product-specific transactions with US-based users, the terms of each individual product apply.
+          </p>
+          <p>
+            The Spanish version of these Terms of Service is the legally binding version. The English version is provided for reference purposes only.
+          </p>
+        </div>
+
+        <div class="section">
+          <span class="section-number">06</span>
+          <h2>Contact</h2>
+          <p>For questions or legal requests:</p>
+          <ul>
+            <li><strong>Email:</strong> <a href="#" class="email-link"><span class="email-text"></span></a></li>
+            <li><strong>Website:</strong> <a href="https://nektool.com">nektool.com</a></li>
+          </ul>
+          <p style="margin-top: 14px;">We respond within <strong>15 business days</strong>.</p>
+        </div>
+
+      </div>
+    </div>
+    <!-- END ENGLISH -->
+
+      </div><!-- end .main-content -->
+    </div><!-- end .content-layout -->
+
+    <!-- FOOTER -->
+    <div class="legal-footer">
+      <p>© 2026 Nektool — PFAE, México.</p>
+      <div class="legal-footer-links">
+        <a href="./privacidad.html">Aviso de Privacidad</a>
+        <a href="#" class="email-link">Contacto</a>
+        <a href="https://nektool.com">nektool.com</a>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    (function () {
+      var links = document.querySelectorAll('.sidebar-list a');
+      if (!links.length || !('IntersectionObserver' in window)) return;
+
+      var sectionIds = Array.from(links).map(function (a) {
+        return a.getAttribute('href').replace('#', '');
+      });
+
+      var active = null;
+
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            active = entry.target.id;
+          }
+        });
+        links.forEach(function (a) {
+          var id = a.getAttribute('href').replace('#', '');
+          a.classList.toggle('active', id === active);
+        });
+      }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+
+      sectionIds.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) observer.observe(el);
+      });
+    })();
+  </script>
+
+  <script>
+    /* ─── EMAIL OBFUSCATION (anti-scraping bots) ─── */
+    (function () {
+      var addr = 'hola' + '@' + 'nektool' + '.com';
+      document.querySelectorAll('.email-link').forEach(function (a) {
+        a.href = 'mailto:' + addr;
+        var span = a.querySelector('.email-text');
+        if (span) span.textContent = addr;
+      });
+    })();
+  </script>
+</body>
+</html>
