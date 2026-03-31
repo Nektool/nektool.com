@@ -859,6 +859,110 @@
       line-height: 1;
     }
 
+    /* ─── HAMBURGER BUTTON ─── */
+    .nav-hamburger {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: none;
+      border: 1px solid var(--border-hi);
+      border-radius: 8px;
+      cursor: pointer;
+      padding: 0;
+      color: var(--muted-hi);
+      transition: border-color var(--transition), color var(--transition), background var(--transition);
+      flex-shrink: 0;
+    }
+    .nav-hamburger:hover {
+      border-color: rgba(99,102,241,0.5);
+      color: var(--text);
+      background: rgba(99,102,241,0.06);
+    }
+    .nav-hamburger svg { display: block; }
+    .nav-hamburger .icon-close { display: none; }
+    .nav-hamburger[aria-expanded="true"] .icon-open  { display: none; }
+    .nav-hamburger[aria-expanded="true"] .icon-close { display: block; }
+
+    /* ─── MOBILE MENU PANEL ─── */
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      gap: 0;
+      background: rgba(10,10,15,0.97);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.28s cubic-bezier(0.4,0,0.2,1),
+                  opacity 0.22s cubic-bezier(0.4,0,0.2,1);
+      opacity: 0;
+    }
+    .mobile-menu.is-open {
+      display: flex;
+      max-height: 400px;
+      opacity: 1;
+    }
+    @keyframes menu-slide-down {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .mobile-menu.is-open {
+      animation: menu-slide-down 0.22s cubic-bezier(0.4,0,0.2,1) forwards;
+    }
+    .mobile-menu-links {
+      display: flex;
+      flex-direction: column;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .mobile-menu-link {
+      display: block;
+      padding: 14px 24px;
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--muted-hi);
+      text-decoration: none;
+      transition: color var(--transition), background var(--transition);
+    }
+    .mobile-menu-link:hover,
+    .mobile-menu-link:focus {
+      color: var(--text);
+      background: rgba(99,102,241,0.06);
+      outline: none;
+    }
+    .mobile-menu-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      gap: 16px;
+    }
+    .mobile-menu-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.1px;
+      transition: background var(--transition), box-shadow var(--transition);
+      flex: 1;
+      justify-content: center;
+    }
+    .mobile-menu-cta:hover {
+      background: var(--accent-hi);
+      box-shadow: 0 0 20px var(--accent-glow);
+    }
+    .mobile-menu-cta svg { width: 14px; height: 14px; }
+
     /* ─── RESPONSIVE ─── */
     @media (max-width: 768px) {
       .hero { padding: 80px 24px 64px; }
@@ -868,7 +972,10 @@
       .footer-top { flex-direction: column; }
       .footer-cols { gap: 40px; }
       .footer-bottom { flex-direction: column; align-items: flex-start; }
-      nav .nav-link { display: none; }
+      nav .nav-link,
+      nav .nav-cta,
+      nav .lang-toggle { display: none; }
+      .nav-hamburger { display: inline-flex; }
     }
     @media (max-width: 640px) {
       .products-grid { flex-direction: column; align-items: stretch; }
@@ -1178,6 +1285,42 @@
           <button id="btnEN" type="button">EN</button>
         </div>
         <a href="https://margenkit.nektool.com" class="nav-cta">
+          <span data-lang="en">Launch app</span>
+          <span data-lang="es">Abrir app</span>
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 8h10M9 4l4 4-4 4"/>
+          </svg>
+        </a>
+        <!-- HAMBURGER — visible only on mobile -->
+        <button class="nav-hamburger" id="navHamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="mobileMenu">
+          <!-- 3-line icon -->
+          <svg class="icon-open" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="2" y1="4.5" x2="16" y2="4.5"/>
+            <line x1="2" y1="9"   x2="16" y2="9"/>
+            <line x1="2" y1="13.5" x2="16" y2="13.5"/>
+          </svg>
+          <!-- X icon -->
+          <svg class="icon-close" width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="3" y1="3" x2="15" y2="15"/>
+            <line x1="15" y1="3" x2="3" y2="15"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <!-- MOBILE MENU PANEL -->
+    <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+      <div class="mobile-menu-links">
+        <a href="#products" class="mobile-menu-link">Products</a>
+        <a href="#markets"  class="mobile-menu-link">Markets</a>
+        <a href="#contact"  class="mobile-menu-link">Contact</a>
+      </div>
+      <div class="mobile-menu-footer">
+        <div class="lang-toggle" id="langToggleMobile" aria-label="Select language">
+          <button id="btnESMobile" type="button">ES</button>
+          <span class="sep">|</span>
+          <button id="btnENMobile" type="button">EN</button>
+        </div>
+        <a href="https://margenkit.nektool.com" class="mobile-menu-cta">
           <span data-lang="en">Launch app</span>
           <span data-lang="es">Abrir app</span>
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1637,6 +1780,28 @@
 
       btnES.addEventListener('click', function () { setLang('es', true); });
       btnEN.addEventListener('click', function () { setLang('en', true); });
+
+      // Sync mobile lang toggle buttons with the same setLang function
+      var btnESMobile = document.getElementById('btnESMobile');
+      var btnENMobile = document.getElementById('btnENMobile');
+      if (btnESMobile) btnESMobile.addEventListener('click', function () { setLang('es', true); });
+      if (btnENMobile) btnENMobile.addEventListener('click', function () { setLang('en', true); });
+
+      // Sync mobile toggle active state — mirror whatever the desktop toggle shows
+      function syncMobileLangState() {
+        var isEs = html.classList.contains('lang-es');
+        if (btnESMobile) btnESMobile.classList.toggle('active', isEs);
+        if (btnENMobile) btnENMobile.classList.toggle('active', !isEs);
+      }
+      // Run once to match initial state
+      syncMobileLangState();
+
+      // Patch setLang so future calls also update mobile buttons
+      var origSetLang = setLang;
+      setLang = function(lang, save) {
+        origSetLang(lang, save);
+        syncMobileLangState();
+      };
     })();
 
     /* ─── SCROLL REVEAL (IntersectionObserver) ─── */
@@ -1660,6 +1825,61 @@
 
       document.querySelectorAll('.reveal').forEach(function (el) {
         observer.observe(el);
+      });
+    })();
+  </script>
+
+  <script>
+    /* ─── HAMBURGER MENU ─── */
+    (function () {
+      var btn  = document.getElementById('navHamburger');
+      var menu = document.getElementById('mobileMenu');
+      if (!btn || !menu) return;
+
+      function openMenu() {
+        btn.setAttribute('aria-expanded', 'true');
+        menu.setAttribute('aria-hidden', 'false');
+        menu.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeMenu() {
+        btn.setAttribute('aria-expanded', 'false');
+        menu.setAttribute('aria-hidden', 'true');
+        menu.classList.remove('is-open');
+        document.body.style.overflow = '';
+      }
+
+      btn.addEventListener('click', function () {
+        if (menu.classList.contains('is-open')) {
+          closeMenu();
+        } else {
+          openMenu();
+        }
+      });
+
+      // Close when a nav link inside the menu is clicked
+      menu.querySelectorAll('.mobile-menu-link').forEach(function (link) {
+        link.addEventListener('click', function () { closeMenu(); });
+      });
+
+      // Close when the CTA inside the menu is clicked
+      var mobileCta = menu.querySelector('.mobile-menu-cta');
+      if (mobileCta) mobileCta.addEventListener('click', function () { closeMenu(); });
+
+      // Close on Escape key
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && menu.classList.contains('is-open')) {
+          closeMenu();
+          btn.focus();
+        }
+      });
+
+      // Close if viewport widens above 768px (e.g. user rotates device)
+      window.addEventListener('resize', function () {
+        if (window.innerWidth > 768 && menu.classList.contains('is-open')) {
+          closeMenu();
+        }
       });
     })();
   </script>
