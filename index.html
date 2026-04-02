@@ -445,21 +445,21 @@
 
     /* ─── PRODUCTS GRID ─── */
     .products-grid {
-      display: flex;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
     }
     .product-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 48px;
+      padding: 40px;
       display: flex;
       flex-direction: column;
       gap: 20px;
       transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
       position: relative;
       overflow: hidden;
-      max-width: 640px;
       width: 100%;
     }
     .product-card::before {
@@ -967,6 +967,7 @@
     @media (max-width: 768px) {
       .hero { padding: 80px 24px 64px; }
       .markets-grid { grid-template-columns: 1fr; }
+      .products-grid { grid-template-columns: 1fr; }
       .stats-inner { gap: 32px; }
       .stat-divider { display: none; }
       .footer-top { flex-direction: column; }
@@ -978,8 +979,7 @@
       .nav-hamburger { display: inline-flex; }
     }
     @media (max-width: 640px) {
-      .products-grid { flex-direction: column; align-items: stretch; }
-      .product-card { padding: 32px; }
+      .product-card { padding: 28px; }
       .why-grid { grid-template-columns: 1fr; }
       .hero h1 { letter-spacing: -1.5px; }
       .contact-inner h2 { letter-spacing: -1px; }
@@ -1214,6 +1214,67 @@
     }
     .mockup-row.total span:last-child { color: #10b981; }
 
+    /* ─── PRODUCT ICON COLOR VARIANTS ─── */
+    .product-icon.icon-teal {
+      background: rgba(20,184,166,0.10);
+      border-color: rgba(20,184,166,0.20);
+    }
+    .product-icon.icon-teal svg { color: #2dd4bf; }
+
+    /* ─── PRODUCT CTA SECONDARY (LeadFlow) ─── */
+    .product-cta-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--accent-hi);
+      text-decoration: none;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 8px;
+      border: 1px solid rgba(99,102,241,0.35);
+      transition: background var(--transition), border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .product-cta-secondary:hover {
+      background: rgba(99,102,241,0.10);
+      border-color: rgba(99,102,241,0.55);
+      box-shadow: 0 4px 24px rgba(99,102,241,0.20);
+      transform: translateY(-1px);
+    }
+    .product-cta-secondary::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 35%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(99,102,241,0.12), transparent);
+      animation: shimmer 3.8s ease-in-out 2.4s infinite;
+      pointer-events: none;
+    }
+
+    /* ─── PRODUCT PRICE BADGE ─── */
+    .product-price {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted-hi);
+      margin-top: -4px;
+    }
+    .product-price .price-free {
+      font-weight: 700;
+      color: var(--green);
+    }
+    .product-price .price-sep {
+      color: var(--border-hi);
+    }
+
     /* ─── WHY ICON COLOR VARIANTS ─── */
     .why-icon.icon-purple {
       background: rgba(139,92,246,0.12);
@@ -1284,9 +1345,9 @@
           <span class="sep">|</span>
           <button id="btnEN" type="button">EN</button>
         </div>
-        <a href="https://margenkit.nektool.com" class="nav-cta">
-          <span data-lang="en">Launch app</span>
-          <span data-lang="es">Abrir app</span>
+        <a href="#products" class="nav-cta">
+          <span data-lang="en">Our products</span>
+          <span data-lang="es">Nuestros productos</span>
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 8h10M9 4l4 4-4 4"/>
           </svg>
@@ -1320,9 +1381,9 @@
           <span class="sep">|</span>
           <button id="btnENMobile" type="button">EN</button>
         </div>
-        <a href="https://margenkit.nektool.com" class="mobile-menu-cta">
-          <span data-lang="en">Launch app</span>
-          <span data-lang="es">Abrir app</span>
+        <a href="#products" class="mobile-menu-cta">
+          <span data-lang="en">Our products</span>
+          <span data-lang="es">Nuestros productos</span>
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M3 8h10M9 4l4 4-4 4"/>
           </svg>
@@ -1352,8 +1413,8 @@
       <div class="hero-content">
         <div class="hero-eyebrow">
           <span class="eyebrow-dot"></span>
-          <span data-lang="en">Now available — MargenKit</span>
-          <span data-lang="es">Disponible ahora — MargenKit</span>
+          <span data-lang="en">2 products live — MargenKit &amp; LeadFlow</span>
+          <span data-lang="es">2 productos activos — MargenKit y LeadFlow</span>
         </div>
         <h1>
           <span data-lang="en">Micro-tools that solve<br><span class="highlight">one problem perfectly</span></span>
@@ -1364,16 +1425,15 @@
           <span data-lang="es">Nektool construye MicroSaaS especializados — software pequeño y enfocado que hace una cosa mejor que nadie. Cada producto ataca un problema específico de una industria en México y EE.UU.</span>
         </p>
         <div class="hero-actions">
-          <a href="https://margenkit.nektool.com" class="btn-primary">
-            <span data-lang="en">Get started free</span>
-            <span data-lang="es">Empieza gratis</span>
+          <a href="#products" class="btn-primary">
+            <span data-lang="en">See all products</span>
+            <span data-lang="es">Ver todos los productos</span>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 8h10M9 4l4 4-4 4"/>
             </svg>
           </a>
-          <a href="#products" class="btn-ghost">
-            <span data-lang="en">See all products</span>
-            <span data-lang="es">Ver productos</span>
+          <a href="https://margenkit.nektool.com" class="btn-ghost">
+            MargenKit
           </a>
         </div>
       </div>
@@ -1445,10 +1505,10 @@
       </div>
       <div class="stat-divider"></div>
       <div class="stat-item">
-        <span class="stat-num">1</span>
+        <span class="stat-num">2</span>
         <span class="stat-label">
-          <span data-lang="en">Product live</span>
-          <span data-lang="es">Producto activo</span>
+          <span data-lang="en">Products live</span>
+          <span data-lang="es">Productos activos</span>
         </span>
       </div>
       <div class="stat-divider"></div>
@@ -1490,6 +1550,14 @@
             </svg>
           </div>
           <div class="product-name">MargenKit</div>
+          <div class="product-price">
+            <span class="price-free">
+              <span data-lang="en">Free</span>
+              <span data-lang="es">Gratis</span>
+            </span>
+            <span class="price-sep">/</span>
+            <span>$249 MXN/<span data-lang="en">mo</span><span data-lang="es">mes</span></span>
+          </div>
           <p class="product-desc">
             <span data-lang="en">Most sellers on Mercado Libre, Amazon MX, and TikTok Shop don't know their real margin — SAT withholdings, platform fees, and shipping eat into profit silently. MargenKit calculates it all in real time so you always know exactly what you're making.</span>
             <span data-lang="es">La mayoría de los vendedores en Mercado Libre, Amazon MX y TikTok Shop no conocen su margen real — las retenciones SAT, comisiones y envíos recortan la ganancia en silencio. MargenKit lo calcula todo en tiempo real para que siempre sepas exactamente cuánto estás ganando.</span>
@@ -1497,6 +1565,39 @@
           <a href="https://margenkit.nektool.com" class="product-cta">
             <span data-lang="en">Start for free</span>
             <span data-lang="es">Empieza gratis</span>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;">
+              <path d="M3 8h10M9 4l4 4-4 4"/>
+            </svg>
+          </a>
+        </div>
+
+        <!-- LeadFlow -->
+        <div class="product-card">
+          <div class="product-status live">Live</div>
+          <div class="product-icon icon-teal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <div class="product-name">LeadFlow</div>
+          <div class="product-price">
+            <span class="price-free">
+              <span data-lang="en">Free</span>
+              <span data-lang="es">Gratis</span>
+            </span>
+            <span class="price-sep">/</span>
+            <span>$15 USD/<span data-lang="en">mo</span><span data-lang="es">mes</span></span>
+          </div>
+          <p class="product-desc">
+            <span data-lang="en">Freelancers and small agencies lose deals because they forget to follow up. LeadFlow is a simple CRM that tracks your prospects and reminds you to act — no complexity, no learning curve, just close more clients.</span>
+            <span data-lang="es">Los freelancers y agencias pequeñas pierden clientes por no dar seguimiento a tiempo. LeadFlow es un CRM simple que rastrea tus prospectos y te recuerda actuar — sin complejidad, sin curva de aprendizaje, solo cierra más clientes.</span>
+          </p>
+          <a href="https://leadflow.nektool.com" class="product-cta-secondary">
+            <span data-lang="en">Try for free</span>
+            <span data-lang="es">Prueba gratis</span>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;">
               <path d="M3 8h10M9 4l4 4-4 4"/>
             </svg>
@@ -1666,8 +1767,8 @@
           <span data-lang="es">Contáctanos</span>
         </h2>
         <p>
-          <span data-lang="en">For partnerships, press inquiries, or business development. This is not product support — for app help, visit margenkit.nektool.com.</span>
-          <span data-lang="es">Para alianzas, prensa o desarrollo de negocios. Este no es soporte de producto — para ayuda con la app, visita margenkit.nektool.com.</span>
+          <span data-lang="en">For partnerships, press inquiries, or business development. This is not product support — for app help, visit each product's site directly.</span>
+          <span data-lang="es">Para alianzas, prensa o desarrollo de negocios. Este no es soporte de producto — para ayuda con la app, visita el sitio de cada producto directamente.</span>
         </p>
         <a href="#" class="contact-email email-link">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -1717,6 +1818,7 @@
             <div class="footer-col-title">Products</div>
             <div class="footer-col-links">
               <a href="https://margenkit.nektool.com">MargenKit</a>
+              <a href="https://leadflow.nektool.com">LeadFlow</a>
             </div>
           </div>
           <div>
