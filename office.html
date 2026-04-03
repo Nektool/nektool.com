@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nektool — Mission Control</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f172a;--card:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;
+  --indigo:#6366f1;--violet:#8b5cf6;--green:#22c55e;--amber:#f59e0b;--red:#ef4444;
+  --font:'JetBrains Mono','Fira Code','Cascadia Code',Consolas,monospace;
+}
+html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:13px;overflow-x:hidden}
+
+/* Cyberpunk grid background */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(99,102,241,.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(99,102,241,.04) 1px,transparent 1px);
+  background-size:40px 40px}
+
+#app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
+
+/* Header */
+#header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;
+  border-bottom:1px solid var(--border);background:rgba(15,23,42,.85);backdrop-filter:blur(12px);
+  position:sticky;top:0;z-index:100}
+.logo{font-size:18px;font-weight:700;color:var(--indigo);letter-spacing:.1em}
+.logo span{color:var(--violet)}
+.logo::after{content:'_';animation:blink 1s step-end infinite;color:var(--violet)}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;
+  margin-right:6px;animation:pulse-dot 2s ease-in-out infinite}
+.header-right{display:flex;align-items:center;gap:16px;font-size:11px;color:var(--muted)}
+
+/* Layout */
+#main{display:flex;flex:1;overflow:hidden}
+#office-area{flex:1;padding:20px;overflow:auto}
+#dashboard{width:300px;min-width:300px;border-left:1px solid var(--border);padding:16px;
+  display:flex;flex-direction:column;gap:14px;background:rgba(30,41,59,.5);overflow-y:auto}
+
+/* Office grid */
+#office-label{margin-bottom:12px;font-size:11px;color:var(--muted);letter-spacing:.08em}
+#office-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:900px;margin:0 auto}
+
+/* Desk cards */
+.desk{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;
+  cursor:pointer;position:relative;transition:transform .2s,box-shadow .3s;user-select:none}
+.desk:hover{transform:translateY(-2px)}
+.desk::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+  width:60%;height:3px;border-radius:3px 3px 0 0;background:var(--ac,var(--border));opacity:.5}
+.desk.working{border-color:var(--ac,var(--indigo));box-shadow:0 0 14px -2px var(--ac,var(--indigo))}
+.desk.blocked{border-color:var(--red);box-shadow:0 0 14px -2px var(--red);animation:blink-border 1.2s infinite}
+.desk.done{border-color:var(--green);opacity:.85}
+.desk.idle{opacity:.7}
+.desk-header{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+.desk-icon{font-size:22px;line-height:1;flex-shrink:0;position:relative}
+.desk.working .desk-icon::after{content:'';position:absolute;inset:-4px;border-radius:50%;
+  border:2px solid var(--ac,var(--indigo));animation:pulse-ring 2s ease-out infinite}
+.desk-name{font-size:12px;font-weight:700;line-height:1.2}
+.desk-role{font-size:10px;color:var(--muted);margin-top:2px}
+.sbadge{margin-left:auto;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;
+  letter-spacing:.08em;flex-shrink:0}
+.s-working{background:rgba(34,197,94,.15);color:var(--green)}
+.s-idle{background:rgba(245,158,11,.15);color:var(--amber)}
+.s-done{background:rgba(34,197,94,.2);color:var(--green)}
+.s-blocked{background:rgba(239,68,68,.2);color:var(--red)}
+.desk-action{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;padding-top:6px;border-top:1px solid var(--border)}
+.desk-time{font-size:9px;color:#64748b;margin-top:2px}
+
+/* Special desks */
+.desk.ares-desk{grid-column:2/4;background:linear-gradient(135deg,var(--card) 60%,rgba(99,102,241,.1))}
+.desk.vip{border-color:#fbbf24;background:linear-gradient(135deg,var(--card) 60%,rgba(251,191,36,.07))}
+.desk.vip::before{background:#fbbf24}
+.vip-badge{position:absolute;top:-9px;right:10px;background:#fbbf24;color:#0f172a;
+  font-size:8px;font-weight:800;padding:2px 7px;border-radius:4px;letter-spacing:.1em}
+
+/* Dashboard widgets */
+.widget{background:rgba(15,23,42,.6);border:1px solid var(--border);border-radius:8px;padding:12px}
+.widget-title{font-size:10px;font-weight:700;color:var(--indigo);letter-spacing:.12em;
+  margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.dash-header{text-align:center;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.dash-title{font-size:13px;font-weight:800;color:var(--indigo);letter-spacing:.12em}
+.dash-sub{font-size:9px;color:var(--muted);margin-top:3px}
+
+/* Progress */
+.prog-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px}
+.prog-label strong{color:var(--text)}
+.prog-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--indigo),var(--violet));
+  border-radius:4px;width:0%;transition:width 1s ease}
+
+/* Agent list rows */
+.agent-row{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11px;
+  border-bottom:1px solid rgba(51,65,85,.4)}
+.agent-row:last-child{border-bottom:none}
+.adot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.adot-working{background:var(--green);animation:pulse-dot 2s infinite}
+.adot-idle{background:var(--amber);opacity:.7}
+.adot-done{background:var(--green)}
+.adot-blocked{background:var(--red);animation:pulse-dot .8s infinite}
+.arow-name{flex:1;color:var(--text)}
+.arow-status{font-size:9px;color:var(--muted);letter-spacing:.05em}
+
+/* Metrics grid */
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.metric-item{text-align:center;padding:8px 4px;background:rgba(99,102,241,.05);
+  border-radius:6px;border:1px solid var(--border)}
+.metric-value{font-size:20px;font-weight:800;line-height:1}
+.metric-label{font-size:9px;color:var(--muted);margin-top:4px;letter-spacing:.06em}
+
+/* Revenue */
+.rev-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;
+  font-size:11px;border-bottom:1px solid rgba(51,65,85,.4)}
+.rev-row:last-child{border-bottom:none}
+.rev-key{color:var(--muted)}
+.rev-val{font-weight:700}
+.zero{color:var(--amber)}
+.deadline{color:var(--red)}
+
+/* Last action */
+.la-actor{color:var(--indigo);font-weight:700}
+.la-time{font-size:9px;color:var(--muted);display:block;margin-top:4px}
+
+/* Buttons */
+.ctrl-row{display:flex;gap:8px}
+.btn{flex:1;padding:8px;border-radius:6px;border:1px solid var(--border);
+  background:rgba(99,102,241,.1);color:var(--text);font-family:var(--font);font-size:11px;
+  font-weight:700;cursor:pointer;transition:background .2s,box-shadow .2s;letter-spacing:.06em}
+.btn:hover{background:rgba(99,102,241,.25);box-shadow:0 0 10px rgba(99,102,241,.3)}
+.btn.danger{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3)}
+.btn.danger:hover{background:rgba(239,68,68,.25);box-shadow:0 0 10px rgba(239,68,68,.3)}
+.btn-full{width:100%;margin-top:8px;font-size:10px}
+
+/* Popup */
+#popup-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;
+  backdrop-filter:blur(4px);align-items:center;justify-content:center}
+#popup-overlay.open{display:flex}
+#popup{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;
+  width:340px;max-width:90vw;position:relative;animation:pop-in .2s ease}
+#popup-close{position:absolute;top:10px;right:14px;background:none;border:none;
+  color:var(--muted);font-size:18px;cursor:pointer;font-family:var(--font)}
+#popup-close:hover{color:var(--text)}
+#popup-icon{font-size:36px;margin-bottom:8px;display:block}
+#popup-name{font-size:16px;font-weight:800;margin-bottom:2px}
+#popup-role{font-size:11px;color:var(--muted);margin-bottom:12px}
+.popup-row{display:flex;gap:8px;padding:6px 0;font-size:11px;
+  border-bottom:1px solid var(--border);align-items:flex-start}
+.popup-row:last-child{border-bottom:none}
+.pk{color:var(--muted);width:80px;flex-shrink:0}
+.pv{flex:1}
+
+/* Particles */
+#particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.particle{position:absolute;width:2px;height:2px;border-radius:50%;opacity:0;
+  animation:float-particle var(--dur,12s) linear var(--delay,0s) infinite}
+
+/* Feed */
+#feed-bar{border-top:1px solid var(--border);background:rgba(15,23,42,.9);
+  padding:8px 0;overflow:hidden;flex-shrink:0}
+#feed-track{display:flex;white-space:nowrap;animation:marquee 40s linear infinite}
+#feed-track span{color:var(--green);font-size:11px;padding:0 24px}
+#feed-track span::before{content:'/// ';color:var(--indigo)}
+
+/* Animations */
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
+@keyframes pulse-ring{0%{transform:scale(.9);opacity:.8}70%,100%{transform:scale(1.4);opacity:0}}
+@keyframes blink-border{0%,100%{box-shadow:0 0 14px -2px var(--red)}50%{box-shadow:0 0 24px 2px var(--red)}}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes pop-in{from{opacity:0;transform:scale(.92) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes float-particle{0%{transform:translateY(100vh) translateX(0);opacity:0}10%{opacity:.4}90%{opacity:.2}100%{transform:translateY(-60px) translateX(var(--drift,20px));opacity:0}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* Responsive */
+@media(max-width:768px){
+  #main{flex-direction:column-reverse}
+  #dashboard{width:100%;min-width:unset;border-left:none;border-bottom:1px solid var(--border);max-height:420px}
+  #office-grid{grid-template-columns:repeat(2,1fr)}
+  .desk.ares-desk{grid-column:1/3}
+  .desk.vip{grid-column:2}
+}
+</style>
+</head>
+<body>
+
+<div id="particles"></div>
+
+<div id="app">
+
+  <header id="header">
+    <div class="logo">NEKTOOL<span>.</span>IO</div>
+    <div class="header-right">
+      <span><span class="status-dot"></span>SISTEMA ACTIVO</span>
+      <span id="clock">--:--:--</span>
+      <span style="color:var(--violet)">SESION #19</span>
+    </div>
+  </header>
+
+  <div id="main">
+    <div id="office-area">
+      <div id="office-label">OFICINA VIRTUAL &nbsp;/&nbsp; NEKTOOL TEAM &nbsp;/&nbsp; <span style="color:var(--green)">10 AGENTES</span></div>
+      <div id="office-grid"></div>
+    </div>
+
+    <aside id="dashboard">
+      <div class="dash-header">
+        <div class="dash-title">MISSION CONTROL</div>
+        <div class="dash-sub">NEKTOOL — 2 APR 2026</div>
+      </div>
+
+      <div class="widget">
+        <div class="widget-title">PROGRESS</div>
+        <div class="prog-label"><span>MVP Completo</span><strong id="prog-pct">0%</strong></div>
+        <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+      </div>
+
+      <div class="widget">
+        <div class="widget-title">AGENTS</div>
+        <div id="agents-list"></div>
+      </div>
+
+      <div class="widget">
+        <div class="widget-title">TODAY</div>
+        <div class="metrics-grid">
+          <div class="metric-item"><div class="metric-value" id="m-commits">0</div><div class="metric-label">COMMITS</div></div>
+          <div class="metric-item"><div class="metric-value" id="m-deploys">0</div><div class="metric-label">DEPLOYS</div></div>
+          <div class="metric-item" style="grid-column:1/-1"><div class="metric-value" id="m-files">0</div><div class="metric-label">FILES EDITED</div></div>
+        </div>
+      </div>
+
+      <div class="widget">
+        <div class="widget-title">REVENUE</div>
+        <div class="rev-row"><span class="rev-key">MRR</span><span class="rev-val zero" id="rev-mrr">$0 MXN</span></div>
+        <div class="rev-row"><span class="rev-key">Clientes</span><span class="rev-val zero" id="rev-clients">0</span></div>
+        <div class="rev-row"><span class="rev-key">Runway</span><span class="rev-val deadline" id="rev-deadline">29 dias</span></div>
+      </div>
+
+      <div class="widget">
+        <div class="widget-title">LAST ACTION</div>
+        <div style="font-size:11px;line-height:1.6">
+          <span class="la-actor" id="la-actor">Developer</span><span id="la-text">: edit i18n.ts</span>
+          <span class="la-time" id="la-time">--:-- PM</span>
+        </div>
+      </div>
+
+      <div class="widget">
+        <div class="widget-title">CONTROLS</div>
+        <div class="ctrl-row">
+          <button class="btn" id="btn-start" onclick="handleStart()">[ START ]</button>
+          <button class="btn danger" id="btn-stop" onclick="handleStop()">[ STOP ]</button>
+        </div>
+        <button class="btn btn-full" onclick="toggleJesus()">[ TOGGLE INVERSOR ]</button>
+      </div>
+    </aside>
+  </div>
+
+  <div id="feed-bar"><div id="feed-track"></div></div>
+</div>
+
+<div id="popup-overlay" onclick="closePopup(event)">
+  <div id="popup">
+    <button id="popup-close" onclick="closePopup()">x</button>
+    <span id="popup-icon">💻</span>
+    <div id="popup-name">Agent</div>
+    <div id="popup-role">Role</div>
+    <div id="popup-body"></div>
+  </div>
+</div>
+
+<script>
+/* === STATE — edit this to update the office === */
+const STATE = {
+  agents: {
+    ares:        {name:'Ares',        role:'Orquestador',    icon:'🖥️', color:'#6366f1',status:'working',lastAction:'Coordinando sesion 19',        file:'estado.md',    time:'3:45 PM'},
+    ceo:         {name:'CEO',         role:'Director',       icon:'🪑', color:'#8b5cf6',status:'idle',   lastAction:'Asignaciones completadas',      file:'tasks.md',     time:'3:30 PM'},
+    developer:   {name:'Developer',   role:'Full-Stack Dev', icon:'💻', color:'#22c55e',status:'working',lastAction:'Construyendo office/index.html',file:'index.html',   time:'3:42 PM'},
+    tester:      {name:'Tester',      role:'QA Engineer',    icon:'✅', color:'#f59e0b',status:'done',   lastAction:'Audit Stripe 4.3/5',            file:'qareport.md',  time:'3:20 PM'},
+    critic:      {name:'Critic',      role:'Product Critic', icon:'🔍', color:'#ef4444',status:'idle',   lastAction:'Pendiente evaluar demo',        file:'critic-log.md',time:'3:00 PM'},
+    ventas:      {name:'Ventas',      role:'Sales',          icon:'💬', color:'#06b6d4',status:'working',lastAction:'Posts FB + directorios',        file:'outreach.md',  time:'3:40 PM'},
+    emprendedor: {name:'Emprendedor', role:'Entrepreneur',   icon:'📋', color:'#f97316',status:'done',   lastAction:'10 grupos FB mapeados',         file:'ideas.md',     time:'3:15 PM'},
+    pm:          {name:'PM',          role:'Proj. Manager',  icon:'📅', color:'#ec4899',status:'idle',   lastAction:'Esperando dev-done',            file:'plan.md',      time:'2:50 PM'},
+    finanzas:    {name:'Finanzas',    role:'Finance',        icon:'🧮', color:'#14b8a6',status:'idle',   lastAction:'Sin alertas',                   file:'finanzas.md',  time:'2:00 PM'},
+    legal:       {name:'Legal',       role:'Legal',          icon:'📚', color:'#64748b',status:'idle',   lastAction:'Sin pendientes',                file:'legal.md',     time:'2:00 PM'},
+  },
+  metrics:{commits:4,deploys:2,files:23,mrr:0,clients:0,deadline:29,progress:78},
+  jesus:{present:false},
+  feed:[
+    'DEVELOPER: Office virtual animada construida',
+    'TESTER: Stripe LeadFlow aprobado 4.3/5',
+    'VENTAS: 3 posts FB listos para publicar',
+    'EMPRENDEDOR: 10 grupos FB mapeados',
+    'ARES: Sesion 19 iniciada — equipo activo',
+    '2 PRODUCTS LIVE: MargenKit + LeadFlow',
+    'BUILD OK','DEPLOY OK','SYSTEM NOMINAL',
+  ]
+};
+
+const DESK_ORDER = ['ares','jesus_vip','ceo','developer','tester','ventas','emprendedor','pm','finanzas','legal'];
+const STATUS_LABEL = {working:'WORKING',idle:'IDLE',done:'DONE',blocked:'BLOCKED'};
+const STATUS_COLOR  = {working:'#22c55e',idle:'#f59e0b',done:'#22c55e',blocked:'#ef4444'};
+
+/* === BUILD DESKS === */
+function renderDesks(){
+  const grid = document.getElementById('office-grid');
+  grid.innerHTML = '';
+  DESK_ORDER.forEach(key => grid.appendChild(key === 'jesus_vip' ? buildJesus() : buildDesk(key)));
+}
+
+function buildDesk(key){
+  const a = STATE.agents[key];
+  const el = document.createElement('div');
+  el.className = 'desk ' + a.status + (key==='ares' ? ' ares-desk' : '');
+  el.style.setProperty('--ac', a.color);
+  el.setAttribute('data-key', key);
+  el.onclick = () => openPopup(key);
+  el.innerHTML = `
+    <div class="desk-header">
+      <div class="desk-icon">${a.icon}</div>
+      <div><div class="desk-name">${a.name}</div><div class="desk-role">${a.role}</div></div>
+      <span class="sbadge s-${a.status}">${STATUS_LABEL[a.status]||a.status.toUpperCase()}</span>
+    </div>
+    <div class="desk-action">${a.lastAction}</div>
+    <div class="desk-time">${a.time}</div>`;
+  return el;
+}
+
+function buildJesus(){
+  const el = document.createElement('div');
+  const p = STATE.jesus.present;
+  el.className = 'desk vip';
+  el.style.setProperty('--ac','#fbbf24');
+  el.onclick = toggleJesus;
+  el.innerHTML = `
+    <div class="vip-badge">INVERSOR</div>
+    <div class="desk-header">
+      <div class="desk-icon">${p?'👨‍💼':'🪑'}</div>
+      <div><div class="desk-name">Jesus</div><div class="desk-role">Founder</div></div>
+      <span class="sbadge" style="background:rgba(251,191,36,.15);color:#fbbf24">${p?'PRESENTE':'AWAY'}</span>
+    </div>
+    <div class="desk-action">${p?'En la oficina':'Fuera de oficina'}</div>
+    <div class="desk-time" style="color:#fbbf24;font-size:9px">Click para toggle</div>`;
+  return el;
+}
+
+/* === DASHBOARD === */
+function renderDashboard(){
+  const m = STATE.metrics;
+  document.getElementById('prog-pct').textContent = m.progress+'%';
+  document.getElementById('prog-fill').style.width = m.progress+'%';
+
+  const list = document.getElementById('agents-list');
+  list.innerHTML = '';
+  Object.values(STATE.agents).forEach(a => {
+    const r = document.createElement('div');
+    r.className = 'agent-row';
+    r.innerHTML = `<div class="adot adot-${a.status}"></div><span class="arow-name">${a.name}</span><span class="arow-status">${STATUS_LABEL[a.status]||''}</span>`;
+    list.appendChild(r);
+  });
+
+  document.getElementById('m-commits').textContent = m.commits;
+  document.getElementById('m-deploys').textContent = m.deploys;
+  document.getElementById('m-files').textContent   = m.files;
+  document.getElementById('rev-mrr').textContent   = '$'+m.mrr.toLocaleString()+' MXN';
+  document.getElementById('rev-clients').textContent = m.clients;
+  document.getElementById('rev-deadline').textContent = m.deadline+' dias';
+
+  const w = Object.values(STATE.agents).find(a => a.status==='working');
+  if(w){
+    document.getElementById('la-actor').textContent = w.name;
+    document.getElementById('la-text').textContent  = ': '+w.lastAction;
+    document.getElementById('la-time').textContent  = w.time;
+  }
+}
+
+/* === FEED === */
+function buildFeed(){
+  const items = [...STATE.feed,...STATE.feed];
+  document.getElementById('feed-track').innerHTML = items.map(t=>`<span>${t}</span>`).join('');
+}
+
+/* === POPUP === */
+function openPopup(key){
+  const a = STATE.agents[key];
+  if(!a) return;
+  document.getElementById('popup-icon').textContent = a.icon;
+  document.getElementById('popup-name').textContent = a.name;
+  document.getElementById('popup-role').textContent = a.role;
+  document.getElementById('popup').style.borderColor = a.color;
+  document.getElementById('popup').style.boxShadow = '0 0 20px -4px '+a.color;
+  document.getElementById('popup-body').innerHTML = `
+    <div class="popup-row"><span class="pk">Estado</span><span class="pv" style="color:${STATUS_COLOR[a.status]};font-weight:700">${STATUS_LABEL[a.status]}</span></div>
+    <div class="popup-row"><span class="pk">Tarea</span><span class="pv">${a.lastAction}</span></div>
+    <div class="popup-row"><span class="pk">Archivo</span><span class="pv" style="color:var(--indigo)">${a.file}</span></div>
+    <div class="popup-row"><span class="pk">Hora</span><span class="pv">${a.time}</span></div>
+    <div class="popup-row"><span class="pk">Color</span><span class="pv"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${a.color};vertical-align:middle;margin-right:5px"></span>${a.color}</span></div>`;
+  document.getElementById('popup-overlay').classList.add('open');
+}
+
+function closePopup(e){
+  if(!e || e.target===document.getElementById('popup-overlay'))
+    document.getElementById('popup-overlay').classList.remove('open');
+}
+
+/* === CONTROLS === */
+function handleStart(){
+  document.getElementById('btn-start').style.cssText='background:rgba(34,197,94,.25);color:var(--green)';
+  document.getElementById('btn-stop').style.cssText='';
+}
+function handleStop(){
+  document.getElementById('btn-stop').style.cssText='background:rgba(239,68,68,.25);color:var(--red)';
+  document.getElementById('btn-start').style.cssText='';
+}
+function toggleJesus(){ STATE.jesus.present=!STATE.jesus.present; renderDesks(); }
+
+/* === CLOCK === */
+function updateClock(){
+  const n=new Date(), pad=v=>String(v).padStart(2,'0');
+  document.getElementById('clock').textContent=`${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
+}
+
+/* === PARTICLES === */
+function createParticles(){
+  const cont = document.getElementById('particles');
+  const colors = ['#6366f1','#8b5cf6','#22c55e','#06b6d4'];
+  for(let i=0;i<22;i++){
+    const p = document.createElement('div');
+    p.className='particle';
+    const color = colors[i%colors.length];
+    p.style.cssText=`left:${Math.random()*100}%;--dur:${10+Math.random()*14}s;--delay:-${Math.random()*12}s;--drift:${(Math.random()-.5)*80}px;background:${color}`;
+    cont.appendChild(p);
+  }
+}
+
+/* === INIT === */
+function init(){
+  createParticles();
+  renderDesks();
+  renderDashboard();
+  buildFeed();
+  updateClock();
+  setInterval(updateClock,1000);
+
+  // Animated metric counters
+  const m = STATE.metrics;
+  let c=0,d=0,f=0;
+  const tick = setInterval(()=>{
+    c=Math.min(c+1,m.commits); d=Math.min(d+1,m.deploys); f=Math.min(f+1,m.files);
+    document.getElementById('m-commits').textContent=c;
+    document.getElementById('m-deploys').textContent=d;
+    document.getElementById('m-files').textContent=f;
+    if(f>=m.files) clearInterval(tick);
+  },60);
+
+  // Animate progress bar after paint
+  setTimeout(()=>{
+    document.getElementById('prog-fill').style.width=m.progress+'%';
+    document.getElementById('prog-pct').textContent=m.progress+'%';
+  },300);
+
+  handleStart();
+}
+
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
