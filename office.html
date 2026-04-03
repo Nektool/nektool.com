@@ -32,7 +32,8 @@ html,body{background:#0a0e14;color:#e2e8f0;font-family:Consolas,'Courier New',mo
   position:relative;width:100%;max-width:1000px;margin:0 auto;
   background:#0a0e14;
 }
-#office-canvas{display:block;width:100%;max-height:480px;object-fit:contain;image-rendering:pixelated;image-rendering:crisp-edges}
+#office-wrap{max-width:1000px;margin:0 auto;background:#0a0e14}
+#office-canvas{display:block;width:100%;image-rendering:pixelated;image-rendering:crisp-edges}
 
 /* === MARQUEE === */
 #marquee-bar{
@@ -165,7 +166,9 @@ html,body{background:#0a0e14;color:#e2e8f0;font-family:Consolas,'Courier New',mo
 
 <!-- PIXEL ART CANVAS -->
 <div id="canvas-wrap">
+<div id="office-wrap">
   <canvas id="office-canvas" width="1000" height="420"></canvas>
+</div>
 </div>
 
 <!-- MARQUEE -->
