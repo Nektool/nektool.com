@@ -939,7 +939,8 @@ function animLoop(){
 /* ============================================================
    MISSION TIMER
 ============================================================ */
-const sessionStart = Date.now();
+const sessionStart = parseInt(localStorage.getItem('nk_session_start')) || Date.now();
+localStorage.setItem('nk_session_start', sessionStart);
 setInterval(()=>{
   const el = document.getElementById('mission-timer');
   if(!el) return;
