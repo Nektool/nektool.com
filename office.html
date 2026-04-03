@@ -282,21 +282,21 @@ const STATE = {
   events: [
     {time:'4:15 PM',type:'DEPLOY',  agent:'Ares',      text:'Office virtual deployada a nektool.com/office.html'},
     {time:'4:10 PM',type:'COMMIT',  agent:'Ares',      text:'feat: add virtual office page'},
-    {time:'3:55 PM',type:'EDIT',    agent:'Developer', text:'office/index.html — 900 lines rebuilt'},
+    {time:'3:55 PM',type:'EDIT',    agent:'Forge', text:'office/index.html — 900 lines rebuilt'},
     {time:'3:45 PM',type:'WRITE',   agent:'Ares',      text:'scripts/install-autostart.sh — auto-boot config'},
     {time:'3:40 PM',type:'WRITE',   agent:'Ares',      text:'.claude/sessions/ventas.md — session config'},
     {time:'3:38 PM',type:'WRITE',   agent:'Ares',      text:'.claude/sessions/developer.md — session config'},
     {time:'3:35 PM',type:'EDIT',    agent:'Ares',      text:'settings.local.json — 3 hooks configured'},
     {time:'3:30 PM',type:'WRITE',   agent:'Ventas',    text:'listados-directorios-margenkit.md'},
     {time:'3:25 PM',type:'DEPLOY',  agent:'Ares',      text:'MargenKit demo /demo deployada'},
-    {time:'3:20 PM',type:'WRITE',   agent:'Developer', text:'margenkit/src/app/demo/page.tsx — 379 lines'},
+    {time:'3:20 PM',type:'WRITE',   agent:'Forge', text:'margenkit/src/app/demo/page.tsx — 379 lines'},
     {time:'3:15 PM',type:'AUDIT',   agent:'Tester',    text:'Stripe LeadFlow PASS — 4.3/5'},
     {time:'3:10 PM',type:'WRITE',   agent:'Ventas',    text:'posts-fb-margenkit-sesion19.md — 3 posts'},
-    {time:'3:05 PM',type:'WRITE',   agent:'Developer', text:'post-fb-3-envio.svg'},
-    {time:'3:00 PM',type:'RESEARCH',agent:'Research',  text:'10 grupos FB vendedores ML MX mapeados'},
+    {time:'3:05 PM',type:'WRITE',   agent:'Forge', text:'post-fb-3-envio.svg'},
+    {time:'3:00 PM',type:'RESEARCH',agent:'Scout',  text:'10 grupos FB vendedores ML MX mapeados'},
     {time:'2:55 PM',type:'DEPLOY',  agent:'Ares',      text:'LeadFlow fix copy automatic reminders'},
-    {time:'2:50 PM',type:'EDIT',    agent:'Developer', text:'leadflow 5 files — remove false promises'},
-    {time:'2:45 PM',type:'PLAN',    agent:'CEO',       text:'Asignaciones sesion 19 — 7 tareas'},
+    {time:'2:50 PM',type:'EDIT',    agent:'Forge', text:'leadflow 5 files — remove false promises'},
+    {time:'2:45 PM',type:'PLAN',    agent:'Atlas',       text:'Asignaciones sesion 19 — 7 tareas'},
     {time:'2:40 PM',type:'START',   agent:'Ares',      text:'Sesion 19 iniciada'}
   ],
   metrics:{commits:5, deploys:3, mrr:0, clients:0, deadline:29, products:2}
@@ -486,7 +486,7 @@ function drawDesk(gx, gy, agentColor, screenGlow, label, isWorking){
 
   // Screen
   const brightness = isWorking
-    ? 0.7 + 0.3*Math.sin(tick*0.04 + Math.random()*0.1)
+    ? 0.7 + 0.3*Math.sin(tick*0.04)
     : 0.25 + 0.05*Math.sin(tick*0.02);
   ctx.fillStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},${brightness})`;
   ctx.fillRect(Math.round(msx*B), Math.round((gy-monH-2)*B), Math.round(monW*B), Math.round(monH*B));
@@ -716,7 +716,8 @@ function drawScene(){
   }
 
   // === DESKS & PEOPLE ===
-  const positions = getDeskPositions();
+  if(!window._cachedPositions) window._cachedPositions = getDeskPositions();
+  const positions = window._cachedPositions;
   const agentKeys = Object.keys(STATE.agents);
 
   positions.forEach((pos, i) => {
@@ -945,11 +946,80 @@ setInterval(()=>{
   const el = document.getElementById('mission-timer');
   if(!el) return;
   const elapsed = Date.now() - sessionStart;
+  // If more than 4 hours, show "OFF SESSION"
+  if(elapsed > 4*3600000){
+    el.textContent = 'FUERA DE SESION';
+    el.style.color = '#ef4444';
+    return;
+  }
   const h = Math.floor(elapsed/3600000);
   const m = Math.floor((elapsed%3600000)/60000);
   const s = Math.floor((elapsed%60000)/1000);
   el.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.style.color = '#4ade80';
 }, 1000);
+
+/* ============================================================
+   LIVE STATE — fetch state.json every 30s
+============================================================ */
+async function fetchState(){
+  try {
+    const res = await fetch('/state.json?t='+Date.now());
+    if(!res.ok) return;
+    const data = await res.json();
+
+    // Update agent statuses
+    Object.keys(data.agents).forEach(key => {
+      if(STATE.agents[key]){
+        STATE.agents[key].status = data.agents[key].status;
+        STATE.agents[key].lastAction = data.agents[key].task;
+      }
+    });
+
+    // Update metrics
+    if(data.metrics) STATE.metrics = data.metrics;
+
+    // Update session indicator
+    const mcTeam = document.getElementById('mc-team');
+    if(mcTeam){
+      if(data.sessionActive){
+        mcTeam.innerHTML = 'NEKTOOL DEV TEAM <span style="color:#22c55e">● SESSION '+data.sessionNumber+'</span>';
+      } else {
+        mcTeam.innerHTML = 'NEKTOOL DEV TEAM <span style="color:#ef4444">● OFFLINE</span>';
+      }
+    }
+
+    // Update missions
+    if(data.missions){
+      const grid = document.getElementById('missions-grid');
+      if(grid){
+        let html = '';
+        data.missions.completed.forEach(m => {
+          html += `<div class="mission completed"><span class="mission-check">✓</span><span class="mission-text">${m}</span><span class="mission-xp">DONE</span></div>`;
+        });
+        data.missions.active.forEach(m => {
+          html += `<div class="mission active"><span class="mission-check">○</span><span class="mission-text">${m}</span><span class="mission-xp">EN CURSO</span></div>`;
+        });
+        grid.innerHTML = html;
+        const score = document.getElementById('missions-score');
+        if(score) score.textContent = data.missions.completed.length+'/'+( data.missions.completed.length+data.missions.active.length)+' completadas';
+      }
+    }
+
+    // Update Jesus pending
+    if(data.jesusPending){
+      const jesusSection = document.querySelector('#missions-panel > div:last-child');
+      // Will rebuild on next iteration if needed
+    }
+
+    // Rebuild panels with new data
+    buildPanels();
+
+  } catch(e){ /* offline or CORS — use hardcoded state */ }
+}
+// Fetch immediately + every 30s
+fetchState();
+setInterval(fetchState, 30000);
 
 /* ============================================================
    MARQUEE
@@ -960,7 +1030,7 @@ function buildMarquee(){
     'DEVELOPER: Working on virtual office',
     'TESTER: Stripe audit 4.3/5 — PASS',
     'VENTAS: 3 posts FB listos para publicar',
-    'RESEARCH: 10 grupos ML MX mapeados',
+    'SCOUT: 10 grupos ML MX mapeados',
     'DEPLOY: LeadFlow fix live',
     'DEPLOY: MargenKit demo live',
     'ARES: Sesion 19 activa',
