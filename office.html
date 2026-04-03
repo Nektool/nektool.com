@@ -6,461 +6,769 @@
 <title>Nektool — Mission Control</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0f172a;--card:#1e293b;--border:#334155;--text:#e2e8f0;--muted:#94a3b8;
-  --indigo:#6366f1;--violet:#8b5cf6;--green:#22c55e;--amber:#f59e0b;--red:#ef4444;
-  --font:'JetBrains Mono','Fira Code','Cascadia Code',Consolas,monospace;
+html,body{background:#0a0e14;color:#e2e8f0;font-family:Consolas,'Courier New',monospace;font-size:13px;overflow-x:hidden;min-height:100vh}
+
+/* === MISSION CONTROL BAR === */
+#mc-bar{
+  display:flex;align-items:center;gap:16px;padding:10px 18px;
+  background:#0d1117;border-bottom:1px solid #1e293b;
+  position:sticky;top:0;z-index:50;
 }
-html,body{height:100%;font-family:var(--font);background:var(--bg);color:var(--text);font-size:13px;overflow-x:hidden}
+#mc-label{font-size:12px;font-weight:700;color:#22c55e;letter-spacing:.12em;white-space:nowrap}
+#mc-progress-wrap{flex:1;display:flex;align-items:center;gap:10px}
+.mc-seg{height:12px;flex:1;border-radius:2px;background:#1e293b;overflow:hidden;position:relative}
+.mc-seg-fill{height:100%;border-radius:2px;transition:width .8s ease}
+.seg-green .mc-seg-fill{background:linear-gradient(90deg,#16a34a,#22c55e)}
+.seg-amber .mc-seg-fill{background:linear-gradient(90deg,#d97706,#f59e0b)}
+.seg-red .mc-seg-fill{background:linear-gradient(90deg,#991b1b,#ef4444)}
+#mc-right{display:flex;align-items:center;gap:14px;white-space:nowrap}
+#mc-team{font-size:11px;color:#64748b;letter-spacing:.08em}
+#mc-status{font-size:11px;font-weight:700}
+.mc-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:5px;animation:pulse-dot 2s ease-in-out infinite}
+#mc-clock{font-size:11px;color:#4ade80;letter-spacing:.06em}
 
-/* Cyberpunk grid background */
-body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
-  background-image:linear-gradient(rgba(99,102,241,.04) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(99,102,241,.04) 1px,transparent 1px);
-  background-size:40px 40px}
+/* === CANVAS WRAPPER === */
+#canvas-wrap{
+  position:relative;width:100%;max-width:1000px;margin:0 auto;
+  background:#0a0e14;
+}
+#office-canvas{display:block;width:100%;height:auto;image-rendering:pixelated;image-rendering:crisp-edges}
 
-#app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
+/* === MARQUEE === */
+#marquee-bar{
+  background:rgba(0,0,0,.75);border-top:1px solid rgba(74,222,128,.15);
+  padding:6px 0;overflow:hidden;
+}
+#marquee-track{display:flex;white-space:nowrap;animation:marquee 50s linear infinite}
+#marquee-track .mitem{color:#4ade80;font-size:11px;padding:0 28px;letter-spacing:.04em}
+#marquee-track .mitem::before{content:'/// ';color:#6366f1;opacity:.7}
 
-/* Header */
-#header{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;
-  border-bottom:1px solid var(--border);background:rgba(15,23,42,.85);backdrop-filter:blur(12px);
-  position:sticky;top:0;z-index:100}
-.logo{font-size:18px;font-weight:700;color:var(--indigo);letter-spacing:.1em}
-.logo span{color:var(--violet)}
-.logo::after{content:'_';animation:blink 1s step-end infinite;color:var(--violet)}
-.status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;
-  margin-right:6px;animation:pulse-dot 2s ease-in-out infinite}
-.header-right{display:flex;align-items:center;gap:16px;font-size:11px;color:var(--muted)}
+/* === LIVE FEED === */
+#live-feed{
+  max-width:1000px;margin:0 auto;padding:16px 18px;
+  background:#0a0e14;border-top:1px solid #1e293b;
+}
+#feed-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+#feed-title{font-size:12px;font-weight:700;color:#4ade80;letter-spacing:.12em}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:pulse-dot 1.5s ease-in-out infinite}
+#feed-count{margin-left:auto;font-size:10px;color:#64748b}
+#feed-list{display:flex;flex-direction:column;gap:4px;max-height:280px;overflow-y:auto}
+#feed-list::-webkit-scrollbar{width:4px}
+#feed-list::-webkit-scrollbar-track{background:#0d1117}
+#feed-list::-webkit-scrollbar-thumb{background:#1e293b;border-radius:2px}
+.feed-item{display:flex;align-items:baseline;gap:8px;padding:5px 8px;border-radius:4px;font-size:11px;background:rgba(15,23,42,.6);border:1px solid #111827}
+.feed-time{color:#334155;flex-shrink:0;font-size:10px;width:52px}
+.feed-type{font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;flex-shrink:0;letter-spacing:.06em;width:52px;text-align:center}
+.feed-agent{color:#6366f1;font-weight:700;flex-shrink:0;width:74px}
+.feed-text{color:#94a3b8;flex:1}
+.type-DEPLOY{background:rgba(99,102,241,.2);color:#818cf8}
+.type-COMMIT{background:rgba(34,197,94,.15);color:#4ade80}
+.type-EDIT{background:rgba(6,182,212,.15);color:#22d3ee}
+.type-WRITE{background:rgba(249,115,22,.15);color:#fb923c}
+.type-AUDIT{background:rgba(245,158,11,.15);color:#fbbf24}
+.type-RESEARCH{background:rgba(168,85,247,.15);color:#c084fc}
+.type-PLAN{background:rgba(236,72,153,.15);color:#f472b6}
+.type-START{background:rgba(34,197,94,.2);color:#4ade80}
+.type-READ{background:rgba(100,116,139,.15);color:#94a3b8}
 
-/* Layout */
-#main{display:flex;flex:1;overflow:hidden}
-#office-area{flex:1;padding:20px;overflow:auto}
-#dashboard{width:300px;min-width:300px;border-left:1px solid var(--border);padding:16px;
-  display:flex;flex-direction:column;gap:14px;background:rgba(30,41,59,.5);overflow-y:auto}
+/* === AGENT PANELS === */
+#panels-section{
+  max-width:1000px;margin:0 auto;padding:16px 18px 24px;
+}
+#panels-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.agent-panel{
+  background:#111827;border:1px solid #1e293b;border-radius:8px;overflow:hidden;
+  display:flex;flex-direction:column;min-height:220px;
+}
+.panel-header{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid #1e293b}
+.panel-avatar{
+  width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;flex-shrink:0;color:#fff;
+}
+.panel-info{flex:1;min-width:0}
+.panel-name{font-size:12px;font-weight:700;line-height:1.2}
+.panel-sub{font-size:10px;color:#64748b;margin-top:2px}
+.panel-status-badge{font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:.06em;flex-shrink:0}
+.panel-prog-bar{height:3px;width:100%}
+.panel-prog-fill{height:100%;border-radius:0}
+.panel-events{flex:1;padding:10px 14px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;max-height:140px}
+.panel-events::-webkit-scrollbar{width:3px}
+.panel-events::-webkit-scrollbar-thumb{background:#1e293b}
+.panel-event{display:flex;gap:6px;font-size:10px}
+.pe-time{color:#334155;flex-shrink:0;width:42px}
+.pe-text{color:#94a3b8}
 
-/* Office grid */
-#office-label{margin-bottom:12px;font-size:11px;color:var(--muted);letter-spacing:.08em}
-#office-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;max-width:900px;margin:0 auto}
-
-/* Desk cards */
-.desk{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;
-  cursor:pointer;position:relative;transition:transform .2s,box-shadow .3s;user-select:none}
-.desk:hover{transform:translateY(-2px)}
-.desk::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);
-  width:60%;height:3px;border-radius:3px 3px 0 0;background:var(--ac,var(--border));opacity:.5}
-.desk.working{border-color:var(--ac,var(--indigo));box-shadow:0 0 14px -2px var(--ac,var(--indigo))}
-.desk.blocked{border-color:var(--red);box-shadow:0 0 14px -2px var(--red);animation:blink-border 1.2s infinite}
-.desk.done{border-color:var(--green);opacity:.85}
-.desk.idle{opacity:.7}
-.desk-header{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
-.desk-icon{font-size:22px;line-height:1;flex-shrink:0;position:relative}
-.desk.working .desk-icon::after{content:'';position:absolute;inset:-4px;border-radius:50%;
-  border:2px solid var(--ac,var(--indigo));animation:pulse-ring 2s ease-out infinite}
-.desk-name{font-size:12px;font-weight:700;line-height:1.2}
-.desk-role{font-size:10px;color:var(--muted);margin-top:2px}
-.sbadge{margin-left:auto;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;
-  letter-spacing:.08em;flex-shrink:0}
-.s-working{background:rgba(34,197,94,.15);color:var(--green)}
-.s-idle{background:rgba(245,158,11,.15);color:var(--amber)}
-.s-done{background:rgba(34,197,94,.2);color:var(--green)}
-.s-blocked{background:rgba(239,68,68,.2);color:var(--red)}
-.desk-action{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;
-  text-overflow:ellipsis;padding-top:6px;border-top:1px solid var(--border)}
-.desk-time{font-size:9px;color:#64748b;margin-top:2px}
-
-/* Special desks */
-.desk.ares-desk{grid-column:2/4;background:linear-gradient(135deg,var(--card) 60%,rgba(99,102,241,.1))}
-.desk.vip{border-color:#fbbf24;background:linear-gradient(135deg,var(--card) 60%,rgba(251,191,36,.07))}
-.desk.vip::before{background:#fbbf24}
-.vip-badge{position:absolute;top:-9px;right:10px;background:#fbbf24;color:#0f172a;
-  font-size:8px;font-weight:800;padding:2px 7px;border-radius:4px;letter-spacing:.1em}
-
-/* Dashboard widgets */
-.widget{background:rgba(15,23,42,.6);border:1px solid var(--border);border-radius:8px;padding:12px}
-.widget-title{font-size:10px;font-weight:700;color:var(--indigo);letter-spacing:.12em;
-  margin-bottom:10px;border-bottom:1px solid var(--border);padding-bottom:6px}
-.dash-header{text-align:center;padding-bottom:8px;border-bottom:1px solid var(--border)}
-.dash-title{font-size:13px;font-weight:800;color:var(--indigo);letter-spacing:.12em}
-.dash-sub{font-size:9px;color:var(--muted);margin-top:3px}
-
-/* Progress */
-.prog-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:5px}
-.prog-label strong{color:var(--text)}
-.prog-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
-.prog-fill{height:100%;background:linear-gradient(90deg,var(--indigo),var(--violet));
-  border-radius:4px;width:0%;transition:width 1s ease}
-
-/* Agent list rows */
-.agent-row{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11px;
-  border-bottom:1px solid rgba(51,65,85,.4)}
-.agent-row:last-child{border-bottom:none}
-.adot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.adot-working{background:var(--green);animation:pulse-dot 2s infinite}
-.adot-idle{background:var(--amber);opacity:.7}
-.adot-done{background:var(--green)}
-.adot-blocked{background:var(--red);animation:pulse-dot .8s infinite}
-.arow-name{flex:1;color:var(--text)}
-.arow-status{font-size:9px;color:var(--muted);letter-spacing:.05em}
-
-/* Metrics grid */
-.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.metric-item{text-align:center;padding:8px 4px;background:rgba(99,102,241,.05);
-  border-radius:6px;border:1px solid var(--border)}
-.metric-value{font-size:20px;font-weight:800;line-height:1}
-.metric-label{font-size:9px;color:var(--muted);margin-top:4px;letter-spacing:.06em}
-
-/* Revenue */
-.rev-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;
-  font-size:11px;border-bottom:1px solid rgba(51,65,85,.4)}
-.rev-row:last-child{border-bottom:none}
-.rev-key{color:var(--muted)}
-.rev-val{font-weight:700}
-.zero{color:var(--amber)}
-.deadline{color:var(--red)}
-
-/* Last action */
-.la-actor{color:var(--indigo);font-weight:700}
-.la-time{font-size:9px;color:var(--muted);display:block;margin-top:4px}
-
-/* Buttons */
-.ctrl-row{display:flex;gap:8px}
-.btn{flex:1;padding:8px;border-radius:6px;border:1px solid var(--border);
-  background:rgba(99,102,241,.1);color:var(--text);font-family:var(--font);font-size:11px;
-  font-weight:700;cursor:pointer;transition:background .2s,box-shadow .2s;letter-spacing:.06em}
-.btn:hover{background:rgba(99,102,241,.25);box-shadow:0 0 10px rgba(99,102,241,.3)}
-.btn.danger{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3)}
-.btn.danger:hover{background:rgba(239,68,68,.25);box-shadow:0 0 10px rgba(239,68,68,.3)}
-.btn-full{width:100%;margin-top:8px;font-size:10px}
-
-/* Popup */
-#popup-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;
-  backdrop-filter:blur(4px);align-items:center;justify-content:center}
-#popup-overlay.open{display:flex}
-#popup{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;
-  width:340px;max-width:90vw;position:relative;animation:pop-in .2s ease}
-#popup-close{position:absolute;top:10px;right:14px;background:none;border:none;
-  color:var(--muted);font-size:18px;cursor:pointer;font-family:var(--font)}
-#popup-close:hover{color:var(--text)}
-#popup-icon{font-size:36px;margin-bottom:8px;display:block}
-#popup-name{font-size:16px;font-weight:800;margin-bottom:2px}
-#popup-role{font-size:11px;color:var(--muted);margin-bottom:12px}
-.popup-row{display:flex;gap:8px;padding:6px 0;font-size:11px;
-  border-bottom:1px solid var(--border);align-items:flex-start}
-.popup-row:last-child{border-bottom:none}
-.pk{color:var(--muted);width:80px;flex-shrink:0}
-.pv{flex:1}
-
-/* Particles */
-#particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.particle{position:absolute;width:2px;height:2px;border-radius:50%;opacity:0;
-  animation:float-particle var(--dur,12s) linear var(--delay,0s) infinite}
-
-/* Feed */
-#feed-bar{border-top:1px solid var(--border);background:rgba(15,23,42,.9);
-  padding:8px 0;overflow:hidden;flex-shrink:0}
-#feed-track{display:flex;white-space:nowrap;animation:marquee 40s linear infinite}
-#feed-track span{color:var(--green);font-size:11px;padding:0 24px}
-#feed-track span::before{content:'/// ';color:var(--indigo)}
-
-/* Animations */
-@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.85)}}
-@keyframes pulse-ring{0%{transform:scale(.9);opacity:.8}70%,100%{transform:scale(1.4);opacity:0}}
-@keyframes blink-border{0%,100%{box-shadow:0 0 14px -2px var(--red)}50%{box-shadow:0 0 24px 2px var(--red)}}
+/* === ANIMATIONS === */
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
 @keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-@keyframes pop-in{from{opacity:0;transform:scale(.92) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
-@keyframes float-particle{0%{transform:translateY(100vh) translateX(0);opacity:0}10%{opacity:.4}90%{opacity:.2}100%{transform:translateY(-60px) translateX(var(--drift,20px));opacity:0}}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
-/* Responsive */
-@media(max-width:768px){
-  #main{flex-direction:column-reverse}
-  #dashboard{width:100%;min-width:unset;border-left:none;border-bottom:1px solid var(--border);max-height:420px}
-  #office-grid{grid-template-columns:repeat(2,1fr)}
-  .desk.ares-desk{grid-column:1/3}
-  .desk.vip{grid-column:2}
+/* === RESPONSIVE === */
+@media(max-width:700px){
+  #panels-grid{grid-template-columns:1fr}
+  #mc-team{display:none}
+}
+@media(max-width:500px){
+  .feed-agent{width:54px}
+  .feed-type{width:42px}
 }
 </style>
 </head>
 <body>
 
-<div id="particles"></div>
-
-<div id="app">
-
-  <header id="header">
-    <div class="logo">NEKTOOL<span>.</span>IO</div>
-    <div class="header-right">
-      <span><span class="status-dot"></span>SISTEMA ACTIVO</span>
-      <span id="clock">--:--:--</span>
-      <span style="color:var(--violet)">SESION #19</span>
-    </div>
-  </header>
-
-  <div id="main">
-    <div id="office-area">
-      <div id="office-label">OFICINA VIRTUAL &nbsp;/&nbsp; NEKTOOL TEAM &nbsp;/&nbsp; <span style="color:var(--green)">10 AGENTES</span></div>
-      <div id="office-grid"></div>
-    </div>
-
-    <aside id="dashboard">
-      <div class="dash-header">
-        <div class="dash-title">MISSION CONTROL</div>
-        <div class="dash-sub">NEKTOOL — 2 APR 2026</div>
-      </div>
-
-      <div class="widget">
-        <div class="widget-title">PROGRESS</div>
-        <div class="prog-label"><span>MVP Completo</span><strong id="prog-pct">0%</strong></div>
-        <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
-      </div>
-
-      <div class="widget">
-        <div class="widget-title">AGENTS</div>
-        <div id="agents-list"></div>
-      </div>
-
-      <div class="widget">
-        <div class="widget-title">TODAY</div>
-        <div class="metrics-grid">
-          <div class="metric-item"><div class="metric-value" id="m-commits">0</div><div class="metric-label">COMMITS</div></div>
-          <div class="metric-item"><div class="metric-value" id="m-deploys">0</div><div class="metric-label">DEPLOYS</div></div>
-          <div class="metric-item" style="grid-column:1/-1"><div class="metric-value" id="m-files">0</div><div class="metric-label">FILES EDITED</div></div>
-        </div>
-      </div>
-
-      <div class="widget">
-        <div class="widget-title">REVENUE</div>
-        <div class="rev-row"><span class="rev-key">MRR</span><span class="rev-val zero" id="rev-mrr">$0 MXN</span></div>
-        <div class="rev-row"><span class="rev-key">Clientes</span><span class="rev-val zero" id="rev-clients">0</span></div>
-        <div class="rev-row"><span class="rev-key">Runway</span><span class="rev-val deadline" id="rev-deadline">29 dias</span></div>
-      </div>
-
-      <div class="widget">
-        <div class="widget-title">LAST ACTION</div>
-        <div style="font-size:11px;line-height:1.6">
-          <span class="la-actor" id="la-actor">Developer</span><span id="la-text">: edit i18n.ts</span>
-          <span class="la-time" id="la-time">--:-- PM</span>
-        </div>
-      </div>
-
-      <div class="widget">
-        <div class="widget-title">CONTROLS</div>
-        <div class="ctrl-row">
-          <button class="btn" id="btn-start" onclick="handleStart()">[ START ]</button>
-          <button class="btn danger" id="btn-stop" onclick="handleStop()">[ STOP ]</button>
-        </div>
-        <button class="btn btn-full" onclick="toggleJesus()">[ TOGGLE INVERSOR ]</button>
-      </div>
-    </aside>
+<!-- MISSION CONTROL BAR -->
+<div id="mc-bar">
+  <div id="mc-label">// MISSION CONTROL</div>
+  <div id="mc-progress-wrap">
+    <div class="mc-seg seg-green"><div class="mc-seg-fill" id="seg1" style="width:0%"></div></div>
+    <div class="mc-seg seg-green"><div class="mc-seg-fill" id="seg2" style="width:0%"></div></div>
+    <div class="mc-seg seg-green"><div class="mc-seg-fill" id="seg3" style="width:0%"></div></div>
+    <div class="mc-seg seg-amber"><div class="mc-seg-fill" id="seg4" style="width:0%"></div></div>
+    <div class="mc-seg seg-amber"><div class="mc-seg-fill" id="seg5" style="width:0%"></div></div>
+    <div class="mc-seg seg-red"><div class="mc-seg-fill" id="seg6" style="width:0%"></div></div>
   </div>
-
-  <div id="feed-bar"><div id="feed-track"></div></div>
+  <div id="mc-right">
+    <div id="mc-team">NEKTOOL DEV TEAM</div>
+    <div id="mc-status"><span class="mc-dot" style="background:#22c55e"></span><span style="color:#4ade80">BUILD ACTIVE</span></div>
+    <div id="mc-clock">--:--:--</div>
+  </div>
 </div>
 
-<div id="popup-overlay" onclick="closePopup(event)">
-  <div id="popup">
-    <button id="popup-close" onclick="closePopup()">x</button>
-    <span id="popup-icon">💻</span>
-    <div id="popup-name">Agent</div>
-    <div id="popup-role">Role</div>
-    <div id="popup-body"></div>
+<!-- PIXEL ART CANVAS -->
+<div id="canvas-wrap">
+  <canvas id="office-canvas" width="1000" height="420"></canvas>
+</div>
+
+<!-- MARQUEE -->
+<div id="marquee-bar">
+  <div id="marquee-track"></div>
+</div>
+
+<!-- LIVE FEED -->
+<div id="live-feed">
+  <div id="feed-header">
+    <div class="live-dot"></div>
+    <div id="feed-title">LIVE FEED</div>
+    <div id="feed-count">0 events</div>
   </div>
+  <div id="feed-list"></div>
+</div>
+
+<!-- AGENT PANELS -->
+<div id="panels-section">
+  <div id="panels-grid"></div>
 </div>
 
 <script>
-/* === STATE — edit this to update the office === */
+/* ============================================================
+   STATE
+============================================================ */
 const STATE = {
   agents: {
-    ares:        {name:'Ares',        role:'Orquestador',    icon:'🖥️', color:'#6366f1',status:'working',lastAction:'Coordinando sesion 19',        file:'estado.md',    time:'3:45 PM'},
-    ceo:         {name:'CEO',         role:'Director',       icon:'🪑', color:'#8b5cf6',status:'idle',   lastAction:'Asignaciones completadas',      file:'tasks.md',     time:'3:30 PM'},
-    developer:   {name:'Developer',   role:'Full-Stack Dev', icon:'💻', color:'#22c55e',status:'working',lastAction:'Construyendo office/index.html',file:'index.html',   time:'3:42 PM'},
-    tester:      {name:'Tester',      role:'QA Engineer',    icon:'✅', color:'#f59e0b',status:'done',   lastAction:'Audit Stripe 4.3/5',            file:'qareport.md',  time:'3:20 PM'},
-    critic:      {name:'Critic',      role:'Product Critic', icon:'🔍', color:'#ef4444',status:'idle',   lastAction:'Pendiente evaluar demo',        file:'critic-log.md',time:'3:00 PM'},
-    ventas:      {name:'Ventas',      role:'Sales',          icon:'💬', color:'#06b6d4',status:'working',lastAction:'Posts FB + directorios',        file:'outreach.md',  time:'3:40 PM'},
-    emprendedor: {name:'Emprendedor', role:'Entrepreneur',   icon:'📋', color:'#f97316',status:'done',   lastAction:'10 grupos FB mapeados',         file:'ideas.md',     time:'3:15 PM'},
-    pm:          {name:'PM',          role:'Proj. Manager',  icon:'📅', color:'#ec4899',status:'idle',   lastAction:'Esperando dev-done',            file:'plan.md',      time:'2:50 PM'},
-    finanzas:    {name:'Finanzas',    role:'Finance',        icon:'🧮', color:'#14b8a6',status:'idle',   lastAction:'Sin alertas',                   file:'finanzas.md',  time:'2:00 PM'},
-    legal:       {name:'Legal',       role:'Legal',          icon:'📚', color:'#64748b',status:'idle',   lastAction:'Sin pendientes',                file:'legal.md',     time:'2:00 PM'},
+    ares:        {name:'Ares',       role:'Coordinator',  status:'working', color:'#6366f1', lastAction:'Coordinando sesion 19',   icon:'A'},
+    ceo:         {name:'CEO',        role:'Operations',   status:'idle',    color:'#8b5cf6', lastAction:'Asignaciones listas',      icon:'C'},
+    developer:   {name:'Developer',  role:'Full-Stack',   status:'working', color:'#22c55e', lastAction:'Oficina virtual',          icon:'D'},
+    tester:      {name:'Tester',     role:'QA',           status:'done',    color:'#f59e0b', lastAction:'Stripe audit 4.3/5',       icon:'T'},
+    critic:      {name:'Critic',     role:'Product',      status:'idle',    color:'#ef4444', lastAction:'Pendiente evaluar',        icon:'P'},
+    ventas:      {name:'Ventas',     role:'Sales',        status:'working', color:'#06b6d4', lastAction:'Posts FB listos',          icon:'V'},
+    emprendedor: {name:'Research',   role:'Ideas',        status:'done',    color:'#f97316', lastAction:'10 grupos FB',             icon:'R'},
+    pm:          {name:'PM',         role:'Projects',     status:'idle',    color:'#ec4899', lastAction:'Esperando dev-done',       icon:'M'},
+    finanzas:    {name:'Finance',    role:'Fiscal',       status:'idle',    color:'#14b8a6', lastAction:'Sin alertas',              icon:'F'},
+    legal:       {name:'Legal',      role:'Compliance',   status:'idle',    color:'#64748b', lastAction:'Sin pendientes',           icon:'L'}
   },
-  metrics:{commits:4,deploys:2,files:23,mrr:0,clients:0,deadline:29,progress:78},
-  jesus:{present:false},
-  feed:[
-    'DEVELOPER: Office virtual animada construida',
-    'TESTER: Stripe LeadFlow aprobado 4.3/5',
-    'VENTAS: 3 posts FB listos para publicar',
-    'EMPRENDEDOR: 10 grupos FB mapeados',
-    'ARES: Sesion 19 iniciada — equipo activo',
-    '2 PRODUCTS LIVE: MargenKit + LeadFlow',
-    'BUILD OK','DEPLOY OK','SYSTEM NOMINAL',
-  ]
+  events: [
+    {time:'4:15 PM',type:'DEPLOY',  agent:'Ares',      text:'Office virtual deployada a nektool.com/office.html'},
+    {time:'4:10 PM',type:'COMMIT',  agent:'Ares',      text:'feat: add virtual office page'},
+    {time:'3:55 PM',type:'EDIT',    agent:'Developer', text:'office/index.html — 900 lines rebuilt'},
+    {time:'3:45 PM',type:'WRITE',   agent:'Ares',      text:'scripts/install-autostart.sh — auto-boot config'},
+    {time:'3:40 PM',type:'WRITE',   agent:'Ares',      text:'.claude/sessions/ventas.md — session config'},
+    {time:'3:38 PM',type:'WRITE',   agent:'Ares',      text:'.claude/sessions/developer.md — session config'},
+    {time:'3:35 PM',type:'EDIT',    agent:'Ares',      text:'settings.local.json — 3 hooks configured'},
+    {time:'3:30 PM',type:'WRITE',   agent:'Ventas',    text:'listados-directorios-margenkit.md'},
+    {time:'3:25 PM',type:'DEPLOY',  agent:'Ares',      text:'MargenKit demo /demo deployada'},
+    {time:'3:20 PM',type:'WRITE',   agent:'Developer', text:'margenkit/src/app/demo/page.tsx — 379 lines'},
+    {time:'3:15 PM',type:'AUDIT',   agent:'Tester',    text:'Stripe LeadFlow PASS — 4.3/5'},
+    {time:'3:10 PM',type:'WRITE',   agent:'Ventas',    text:'posts-fb-margenkit-sesion19.md — 3 posts'},
+    {time:'3:05 PM',type:'WRITE',   agent:'Developer', text:'post-fb-3-envio.svg'},
+    {time:'3:00 PM',type:'RESEARCH',agent:'Research',  text:'10 grupos FB vendedores ML MX mapeados'},
+    {time:'2:55 PM',type:'DEPLOY',  agent:'Ares',      text:'LeadFlow fix copy automatic reminders'},
+    {time:'2:50 PM',type:'EDIT',    agent:'Developer', text:'leadflow 5 files — remove false promises'},
+    {time:'2:45 PM',type:'PLAN',    agent:'CEO',       text:'Asignaciones sesion 19 — 7 tareas'},
+    {time:'2:40 PM',type:'START',   agent:'Ares',      text:'Sesion 19 iniciada'}
+  ],
+  metrics:{commits:5, deploys:3, mrr:0, clients:0, deadline:29, products:2}
 };
 
-const DESK_ORDER = ['ares','jesus_vip','ceo','developer','tester','ventas','emprendedor','pm','finanzas','legal'];
-const STATUS_LABEL = {working:'WORKING',idle:'IDLE',done:'DONE',blocked:'BLOCKED'};
-const STATUS_COLOR  = {working:'#22c55e',idle:'#f59e0b',done:'#22c55e',blocked:'#ef4444'};
+const PANEL_AGENTS = ['ares','developer','tester'];
 
-/* === BUILD DESKS === */
-function renderDesks(){
-  const grid = document.getElementById('office-grid');
-  grid.innerHTML = '';
-  DESK_ORDER.forEach(key => grid.appendChild(key === 'jesus_vip' ? buildJesus() : buildDesk(key)));
+/* ============================================================
+   CANVAS — PIXEL ART OFFICE
+============================================================ */
+const canvas = document.getElementById('office-canvas');
+const ctx = canvas.getContext('2d');
+const CW = 1000, CH = 420;
+
+// Block size: each pixel art "pixel" = 4 real pixels
+const B = 4;
+
+// Tick counter for animations
+let tick = 0;
+
+// Agent key order per desk (left to right, back row then front row)
+const DESK_AGENTS = ['legal','finanzas','pm','ceo','ares','emprendedor','ventas','developer','tester','critic'];
+
+// Desk layout: 5 back (y~140), 5 front (y~260)
+// x positions: evenly spaced across 1000px
+function getDeskPositions(){
+  const positions = [];
+  const backY  = 130;
+  const frontY = 255;
+  const cols   = 5;
+  const margin = 60;
+  const step   = (CW - margin*2) / (cols - 1);
+  for(let i=0;i<cols;i++) positions.push({x: margin + i*step, y: backY,  row:0});
+  for(let i=0;i<cols;i++) positions.push({x: margin + i*step, y: frontY, row:1});
+  return positions;
 }
 
-function buildDesk(key){
-  const a = STATE.agents[key];
-  const el = document.createElement('div');
-  el.className = 'desk ' + a.status + (key==='ares' ? ' ares-desk' : '');
-  el.style.setProperty('--ac', a.color);
-  el.setAttribute('data-key', key);
-  el.onclick = () => openPopup(key);
-  el.innerHTML = `
-    <div class="desk-header">
-      <div class="desk-icon">${a.icon}</div>
-      <div><div class="desk-name">${a.name}</div><div class="desk-role">${a.role}</div></div>
-      <span class="sbadge s-${a.status}">${STATUS_LABEL[a.status]||a.status.toUpperCase()}</span>
-    </div>
-    <div class="desk-action">${a.lastAction}</div>
-    <div class="desk-time">${a.time}</div>`;
-  return el;
+// Color helpers
+function hexToRgb(hex){
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return {r,g,b};
 }
 
-function buildJesus(){
-  const el = document.createElement('div');
-  const p = STATE.jesus.present;
-  el.className = 'desk vip';
-  el.style.setProperty('--ac','#fbbf24');
-  el.onclick = toggleJesus;
-  el.innerHTML = `
-    <div class="vip-badge">INVERSOR</div>
-    <div class="desk-header">
-      <div class="desk-icon">${p?'👨‍💼':'🪑'}</div>
-      <div><div class="desk-name">Jesus</div><div class="desk-role">Founder</div></div>
-      <span class="sbadge" style="background:rgba(251,191,36,.15);color:#fbbf24">${p?'PRESENTE':'AWAY'}</span>
-    </div>
-    <div class="desk-action">${p?'En la oficina':'Fuera de oficina'}</div>
-    <div class="desk-time" style="color:#fbbf24;font-size:9px">Click para toggle</div>`;
-  return el;
+function drawRect(x,y,w,h,color){
+  ctx.fillStyle = color;
+  ctx.fillRect(Math.round(x*B), Math.round(y*B), Math.round(w*B), Math.round(h*B));
 }
 
-/* === DASHBOARD === */
-function renderDashboard(){
-  const m = STATE.metrics;
-  document.getElementById('prog-pct').textContent = m.progress+'%';
-  document.getElementById('prog-fill').style.width = m.progress+'%';
+// Draw pixel-art person at grid coords (gx, gy) = top-left of person
+function drawPerson(gx, gy, bodyColor, isWorking){
+  // Shadow under chair
+  ctx.fillStyle = 'rgba(0,0,0,0.3)';
+  ctx.fillRect(Math.round((gx-1)*B), Math.round((gy+7)*B), Math.round(8*B), Math.round(2*B));
 
-  const list = document.getElementById('agents-list');
-  list.innerHTML = '';
-  Object.values(STATE.agents).forEach(a => {
-    const r = document.createElement('div');
-    r.className = 'agent-row';
-    r.innerHTML = `<div class="adot adot-${a.status}"></div><span class="arow-name">${a.name}</span><span class="arow-status">${STATUS_LABEL[a.status]||''}</span>`;
-    list.appendChild(r);
+  // Chair legs
+  drawRect(gx,   gy+8, 1, 2, '#555');
+  drawRect(gx+3, gy+8, 1, 2, '#555');
+
+  // Chair seat
+  drawRect(gx-1, gy+6, 6, 2, '#666');
+
+  // Chair back
+  drawRect(gx,   gy+3, 4, 3, '#555');
+
+  // Body
+  drawRect(gx, gy+3, 4, 4, bodyColor);
+
+  // Head
+  const headColor = '#f5c8a0';
+  drawRect(gx+1, gy, 2, 2, headColor);
+
+  // Eyes (tiny)
+  if(isWorking){
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fillRect(Math.round((gx+1.3)*B), Math.round((gy+0.5)*B), Math.round(0.5*B), Math.round(0.5*B));
+    ctx.fillRect(Math.round((gx+2.2)*B), Math.round((gy+0.5)*B), Math.round(0.5*B), Math.round(0.5*B));
+  }
+
+  // Arms (working = raised toward monitor)
+  if(isWorking){
+    drawRect(gx-1, gy+3, 1, 2, headColor);
+    drawRect(gx+4, gy+3, 1, 2, headColor);
+  } else {
+    drawRect(gx-1, gy+4, 1, 3, headColor);
+    drawRect(gx+4, gy+4, 1, 3, headColor);
+  }
+
+  // Hair
+  ctx.fillStyle = '#3d2314';
+  ctx.fillRect(Math.round((gx+1)*B), Math.round(gy*B), Math.round(2*B), Math.round(0.5*B));
+}
+
+function drawDesk(gx, gy, agentColor, screenGlow, label, isWorking){
+  const deskW = 18, deskH = 3;
+  const legH  = 4;
+  const monW  = 8, monH = 5;
+
+  // Desk shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.fillRect(Math.round((gx-1)*B), Math.round((gy+deskH+legH)*B), Math.round((deskW+2)*B), Math.round(B));
+
+  // Desk legs
+  drawRect(gx+1,        gy+deskH, 1, legH, '#5a4010');
+  drawRect(gx+deskW-2,  gy+deskH, 1, legH, '#5a4010');
+
+  // Desk surface
+  const dg = ctx.createLinearGradient(0, gy*B, 0, (gy+deskH)*B);
+  dg.addColorStop(0, '#a07828');
+  dg.addColorStop(1, '#6b4e10');
+  ctx.fillStyle = dg;
+  ctx.fillRect(Math.round(gx*B), Math.round(gy*B), Math.round(deskW*B), Math.round(deskH*B));
+
+  // Monitor stand
+  const msx = gx + (deskW - monW) / 2;
+  drawRect(msx + monW/2 - 0.5, gy - 2, 1, 2, '#444');
+  drawRect(msx + monW/2 - 1.5, gy - 2.5, 3, 0.5, '#555');
+
+  // Monitor body
+  drawRect(msx-0.5, gy - monH - 2.5, monW+1, monH+0.5, '#222');
+
+  // Screen glow halo
+  const rgb = hexToRgb(agentColor);
+  const glowAlpha = isWorking ? 0.18 + 0.08*Math.sin(tick*0.05) : 0.06;
+  ctx.fillStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},${glowAlpha})`;
+  ctx.fillRect(Math.round((msx-2)*B), Math.round((gy-monH-5)*B), Math.round((monW+5)*B), Math.round((monH+4)*B));
+
+  // Screen
+  const brightness = isWorking
+    ? 0.7 + 0.3*Math.sin(tick*0.04 + Math.random()*0.1)
+    : 0.25 + 0.05*Math.sin(tick*0.02);
+  ctx.fillStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},${brightness})`;
+  ctx.fillRect(Math.round(msx*B), Math.round((gy-monH-2)*B), Math.round(monW*B), Math.round(monH*B));
+
+  // Screen scanlines (subtle)
+  ctx.fillStyle = 'rgba(0,0,0,0.15)';
+  for(let i=0;i<monH;i+=2){
+    ctx.fillRect(Math.round(msx*B), Math.round((gy-monH-2+i)*B), Math.round(monW*B), Math.round(B));
+  }
+
+  // Keyboard on desk
+  drawRect(gx+1, gy+0.5, 4, 1, '#333');
+
+  // Mouse
+  drawRect(gx+5.5, gy+0.5, 1.5, 1, '#2a2a2a');
+
+  // Label initial (tiny pixel font sim)
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.font = `bold ${2.5*B}px monospace`;
+  ctx.textAlign = 'center';
+  ctx.fillText(label, Math.round((msx + monW/2)*B), Math.round((gy-monH)*B));
+}
+
+function drawScene(){
+  ctx.clearRect(0, 0, CW, CH);
+
+  // === CEILING ===
+  const ceilGrad = ctx.createLinearGradient(0,0,0,30*B);
+  ceilGrad.addColorStop(0, '#0d1117');
+  ceilGrad.addColorStop(1, '#111827');
+  ctx.fillStyle = ceilGrad;
+  ctx.fillRect(0,0,CW,30*B);
+
+  // Ceiling light panels
+  const panelPositions = [100, 300, 500, 700, 900];
+  panelPositions.forEach(px => {
+    const glow = 0.7 + 0.15*Math.sin(tick*0.015);
+    ctx.fillStyle = `rgba(200,220,255,${glow*0.12})`;
+    ctx.fillRect(px-40, 0, 80, 10*B);
+    ctx.fillStyle = `rgba(180,200,255,${glow*0.35})`;
+    ctx.fillRect(px-36, 2*B, 72, 4*B);
+    // Downward light cone
+    const coneGrad = ctx.createLinearGradient(px, 6*B, px, 60*B);
+    coneGrad.addColorStop(0, `rgba(180,210,255,${glow*0.06})`);
+    coneGrad.addColorStop(1, 'rgba(180,210,255,0)');
+    ctx.fillStyle = coneGrad;
+    ctx.beginPath();
+    ctx.moveTo(px-36, 6*B);
+    ctx.lineTo(px+36, 6*B);
+    ctx.lineTo(px+90, 60*B);
+    ctx.lineTo(px-90, 60*B);
+    ctx.closePath();
+    ctx.fill();
   });
 
-  document.getElementById('m-commits').textContent = m.commits;
-  document.getElementById('m-deploys').textContent = m.deploys;
-  document.getElementById('m-files').textContent   = m.files;
-  document.getElementById('rev-mrr').textContent   = '$'+m.mrr.toLocaleString()+' MXN';
-  document.getElementById('rev-clients').textContent = m.clients;
-  document.getElementById('rev-deadline').textContent = m.deadline+' dias';
+  // === BACK WALL ===
+  const wallGrad = ctx.createLinearGradient(0, 30*B, 0, 80*B);
+  wallGrad.addColorStop(0, '#1a1e2e');
+  wallGrad.addColorStop(1, '#141824');
+  ctx.fillStyle = wallGrad;
+  ctx.fillRect(0, 30*B, CW, 60*B);
 
-  const w = Object.values(STATE.agents).find(a => a.status==='working');
-  if(w){
-    document.getElementById('la-actor').textContent = w.name;
-    document.getElementById('la-text').textContent  = ': '+w.lastAction;
-    document.getElementById('la-time').textContent  = w.time;
+  // Wall texture — subtle vertical lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.02)';
+  ctx.lineWidth = 1;
+  for(let x=0;x<CW;x+=20){
+    ctx.beginPath();
+    ctx.moveTo(x, 30*B);
+    ctx.lineTo(x, 90*B);
+    ctx.stroke();
+  }
+
+  // === NEKTOOL sign on wall ===
+  ctx.fillStyle = 'rgba(99,102,241,0.12)';
+  ctx.fillRect(390, 35*B, 220, 22*B);
+  ctx.strokeStyle = 'rgba(99,102,241,0.35)';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(390, 35*B, 220, 22*B);
+  ctx.fillStyle = '#6366f1';
+  ctx.font = `bold ${6*B}px monospace`;
+  ctx.textAlign = 'center';
+  const glowSign = 0.8 + 0.2*Math.sin(tick*0.03);
+  ctx.shadowColor = '#6366f1';
+  ctx.shadowBlur = 12*glowSign;
+  ctx.fillText('NEKTOOL', CW/2, 49*B);
+  ctx.shadowBlur = 0;
+
+  // Digital clock on wall
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const ss = String(now.getSeconds()).padStart(2,'0');
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.fillRect(820, 37*B, 130, 16*B);
+  ctx.strokeStyle = 'rgba(74,222,128,0.3)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(820, 37*B, 130, 16*B);
+  ctx.fillStyle = '#4ade80';
+  ctx.shadowColor = '#22c55e';
+  ctx.shadowBlur = 8;
+  ctx.font = `bold ${4.5*B}px monospace`;
+  ctx.textAlign = 'center';
+  ctx.fillText(`${hh}:${mm}:${ss}`, 885, 47*B);
+  ctx.shadowBlur = 0;
+
+  // === BOOKSHELF (left wall) ===
+  drawRect(0, 32, 18, 35, '#2a1f10');
+  drawRect(1, 33, 16, 1, '#3d2b14');
+  const bookColors = ['#ef4444','#f59e0b','#22c55e','#6366f1','#ec4899','#06b6d4','#8b5cf6','#f97316'];
+  for(let i=0;i<8;i++){
+    drawRect(1.5+i*2, 34, 1.5, 7, bookColors[i]);
+    drawRect(1.5+i*2, 34, 0.3, 7, 'rgba(0,0,0,0.3)');
+  }
+  drawRect(1, 41, 16, 0.5, '#3d2b14');
+  for(let i=0;i<6;i++){
+    drawRect(2+i*2.5, 42, 2, 5, bookColors[(i+3)%8]);
+  }
+  drawRect(1, 47, 16, 0.5, '#3d2b14');
+
+  // === GLOBE (right, upper) ===
+  const globeX = 880, globeY = 55*B;
+  const globeR = 22;
+  const globeGlow = 0.5 + 0.2*Math.sin(tick*0.025);
+  ctx.shadowColor = '#06b6d4';
+  ctx.shadowBlur = 16*globeGlow;
+  ctx.beginPath();
+  ctx.arc(globeX, globeY, globeR, 0, Math.PI*2);
+  const globeGrad = ctx.createRadialGradient(globeX-6, globeY-6, 2, globeX, globeY, globeR);
+  globeGrad.addColorStop(0, '#0ea5e9');
+  globeGrad.addColorStop(0.6, '#0369a1');
+  globeGrad.addColorStop(1, '#1e3a5f');
+  ctx.fillStyle = globeGrad;
+  ctx.fill();
+  // Continent hints
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.ellipse(globeX, globeY, globeR, globeR*0.3, 0, 0, Math.PI*2);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.ellipse(globeX, globeY, globeR*0.6, globeR, 0, 0, Math.PI*2);
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+  // Stand
+  drawRect(Math.round(globeX/B)-1, Math.round(globeY/B)+6, 2, 3, '#666');
+  drawRect(Math.round(globeX/B)-2, Math.round(globeY/B)+9, 4, 1, '#555');
+
+  // === WHITEBOARD (center-left wall) ===
+  drawRect(52, 33, 36, 22, '#f8f9fa');
+  drawRect(52, 33, 36, 1.5, '#888');
+  drawRect(52, 54, 36, 1.5, '#888');
+  drawRect(52, 33, 1.5, 22, '#888');
+  drawRect(86.5, 33, 1.5, 22, '#888');
+  // Whiteboard content
+  ctx.fillStyle = '#1a3a1a';
+  ctx.font = `bold ${2.5*B}px monospace`;
+  ctx.textAlign = 'left';
+  ctx.fillText('IDEAS', 54*B, 38*B);
+  ctx.strokeStyle = '#22c55e';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(54*B, 41*B); ctx.lineTo(84*B, 41*B); ctx.stroke();
+  ctx.fillStyle = '#333';
+  ctx.font = `${2*B}px monospace`;
+  ['LeadFlow', 'MargenKit', 'Next →'].forEach((t,i)=>{
+    ctx.fillText(t, 54*B, (43+i*4)*B);
+  });
+
+  // === PLANT (bottom-left corner) ===
+  const plantX = 12, plantY = 86;
+  // Pot
+  drawRect(plantX, plantY, 8, 5, '#8B4513');
+  drawRect(plantX-1, plantY-0.5, 10, 1, '#a0522d');
+  // Soil
+  drawRect(plantX+1, plantY+0.5, 6, 1.5, '#5c3317');
+  // Leaves
+  ctx.fillStyle = '#16a34a';
+  ctx.shadowColor = '#22c55e';
+  ctx.shadowBlur = 6;
+  [[plantX+4,plantY-5,10,6],[plantX+3,plantY-8,8,5],[plantX+5,plantY-6,9,4],
+   [plantX+2,plantY-3,6,4],[plantX+6,plantY-7,7,5]].forEach(([x,y,rx,ry])=>{
+    ctx.beginPath();
+    ctx.ellipse(x*B, y*B, rx/2*B, ry/2*B, -0.3, 0, Math.PI*2);
+    ctx.fill();
+  });
+  ctx.shadowBlur = 0;
+
+  // === FLOOR ===
+  const floorGrad = ctx.createLinearGradient(0, 90*B, 0, CH);
+  floorGrad.addColorStop(0, '#2a2e3e');
+  floorGrad.addColorStop(1, '#1e2230');
+  ctx.fillStyle = floorGrad;
+  ctx.fillRect(0, 90*B, CW, CH - 90*B);
+
+  // Floor tiles
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 1;
+  const tileSize = 50;
+  for(let x=0;x<CW;x+=tileSize){
+    ctx.beginPath(); ctx.moveTo(x, 90*B); ctx.lineTo(x, CH); ctx.stroke();
+  }
+  for(let y=90*B;y<CH;y+=tileSize){
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(CW, y); ctx.stroke();
+  }
+
+  // === DESKS & PEOPLE ===
+  const positions = getDeskPositions();
+  const agentKeys = Object.keys(STATE.agents);
+
+  positions.forEach((pos, i) => {
+    const key = DESK_AGENTS[i];
+    const agent = STATE.agents[key];
+    if(!agent) return;
+
+    // Convert pixel positions to grid coords
+    const gx = Math.round(pos.x/B) - 9;
+    const gy = Math.round(pos.y/B);
+
+    const isWorking = agent.status === 'working';
+    const isIdle    = agent.status === 'idle';
+
+    // Draw desk
+    drawDesk(gx, gy, agent.color, isWorking, agent.icon, isWorking);
+
+    // Draw person
+    const personX = gx + 7;
+    const personY = pos.row === 0 ? gy + 4 : gy + 3;
+    drawPerson(personX, personY, agent.color, isWorking);
+
+    // Typing animation particles for working agents
+    if(isWorking && tick % 8 < 4){
+      const rgb = hexToRgb(agent.color);
+      ctx.fillStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},0.7)`;
+      const offsetX = (tick % 3)*2 - 2;
+      ctx.fillRect(Math.round((gx+5+offsetX)*B), Math.round((gy-1)*B), B, B);
+    }
+
+    // Status indicator dot below desk
+    const dotColors = {working:'#22c55e',idle:'#f59e0b',done:'#22c55e',blocked:'#ef4444'};
+    const dotAlpha = (agent.status==='working') ? 0.8+0.2*Math.sin(tick*0.1+i) : 0.5;
+    ctx.fillStyle = dotColors[agent.status] || '#666';
+    ctx.globalAlpha = dotAlpha;
+    ctx.beginPath();
+    ctx.arc(Math.round((gx+9)*B), Math.round((gy+14)*B), 3, 0, Math.PI*2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+
+    // Agent name label
+    ctx.fillStyle = 'rgba(226,232,240,0.8)';
+    ctx.font = `${2*B}px monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillText(agent.name, Math.round((gx+9)*B), Math.round((gy+17)*B));
+  });
+
+  // === AMBIENT PARTICLES ===
+  drawParticles();
+}
+
+// Floating light particles
+const particles = [];
+function initParticles(){
+  for(let i=0;i<8;i++){
+    particles.push({
+      x: Math.random()*CW,
+      y: Math.random()*CH,
+      vx: (Math.random()-.5)*0.4,
+      vy: (Math.random()-.5)*0.3,
+      r: 1.5 + Math.random()*2,
+      color: ['#6366f1','#22c55e','#06b6d4','#8b5cf6'][Math.floor(Math.random()*4)],
+      alpha: 0.1 + Math.random()*0.25,
+      phase: Math.random()*Math.PI*2
+    });
   }
 }
 
-/* === FEED === */
+function drawParticles(){
+  particles.forEach((p,i) => {
+    p.x += p.vx;
+    p.y += p.vy;
+    if(p.x < 0) p.x = CW;
+    if(p.x > CW) p.x = 0;
+    if(p.y < 0) p.y = CH;
+    if(p.y > CH) p.y = 0;
+    const alpha = p.alpha * (0.6 + 0.4*Math.sin(tick*0.02 + p.phase));
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = alpha;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  });
+}
+
+function animLoop(){
+  tick++;
+  drawScene();
+  requestAnimationFrame(animLoop);
+}
+
+/* ============================================================
+   MARQUEE
+============================================================ */
+function buildMarquee(){
+  const items = [
+    '/// NEKTOOL TEAM ///',
+    'DEVELOPER: Working on virtual office',
+    'TESTER: Stripe audit 4.3/5 — PASS',
+    'VENTAS: 3 posts FB listos para publicar',
+    'RESEARCH: 10 grupos ML MX mapeados',
+    'DEPLOY: LeadFlow fix live',
+    'DEPLOY: MargenKit demo live',
+    'ARES: Sesion 19 activa',
+    '2 PRODUCTS LIVE: MargenKit + LeadFlow',
+    'TARGET: 1er cliente antes de Mayo 2026',
+    'BUILD OK // DEPLOY OK // SYSTEM NOMINAL',
+    '>>> NEKTOOL.COM <<<'
+  ];
+  const doubled = [...items, ...items];
+  const track = document.getElementById('marquee-track');
+  track.innerHTML = doubled.map(t=>`<span class="mitem">${t}</span>`).join('');
+}
+
+/* ============================================================
+   LIVE FEED
+============================================================ */
 function buildFeed(){
-  const items = [...STATE.feed,...STATE.feed];
-  document.getElementById('feed-track').innerHTML = items.map(t=>`<span>${t}</span>`).join('');
+  const list = document.getElementById('feed-list');
+  list.innerHTML = '';
+  STATE.events.forEach(ev => {
+    const el = document.createElement('div');
+    el.className = 'feed-item';
+    el.innerHTML = `
+      <span class="feed-time">${ev.time}</span>
+      <span class="feed-type type-${ev.type}">${ev.type}</span>
+      <span class="feed-agent">${ev.agent}</span>
+      <span class="feed-text">${ev.text}</span>`;
+    list.appendChild(el);
+  });
+  document.getElementById('feed-count').textContent = STATE.events.length + ' events';
 }
 
-/* === POPUP === */
-function openPopup(key){
-  const a = STATE.agents[key];
-  if(!a) return;
-  document.getElementById('popup-icon').textContent = a.icon;
-  document.getElementById('popup-name').textContent = a.name;
-  document.getElementById('popup-role').textContent = a.role;
-  document.getElementById('popup').style.borderColor = a.color;
-  document.getElementById('popup').style.boxShadow = '0 0 20px -4px '+a.color;
-  document.getElementById('popup-body').innerHTML = `
-    <div class="popup-row"><span class="pk">Estado</span><span class="pv" style="color:${STATUS_COLOR[a.status]};font-weight:700">${STATUS_LABEL[a.status]}</span></div>
-    <div class="popup-row"><span class="pk">Tarea</span><span class="pv">${a.lastAction}</span></div>
-    <div class="popup-row"><span class="pk">Archivo</span><span class="pv" style="color:var(--indigo)">${a.file}</span></div>
-    <div class="popup-row"><span class="pk">Hora</span><span class="pv">${a.time}</span></div>
-    <div class="popup-row"><span class="pk">Color</span><span class="pv"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${a.color};vertical-align:middle;margin-right:5px"></span>${a.color}</span></div>`;
-  document.getElementById('popup-overlay').classList.add('open');
+/* ============================================================
+   AGENT PANELS
+============================================================ */
+const PANEL_EVENTS = {
+  ares: [
+    {time:'4:15 PM', text:'Office virtual deployada'},
+    {time:'4:10 PM', text:'feat: add virtual office page'},
+    {time:'3:45 PM', text:'scripts/install-autostart.sh'},
+    {time:'3:40 PM', text:'sessions/ventas.md — config'},
+    {time:'3:35 PM', text:'settings.local.json — hooks'},
+    {time:'2:40 PM', text:'Sesion 19 iniciada'},
+  ],
+  developer: [
+    {time:'3:55 PM', text:'office/index.html — 900 lines'},
+    {time:'3:20 PM', text:'demo/page.tsx — 379 lines'},
+    {time:'3:05 PM', text:'post-fb-3-envio.svg'},
+    {time:'2:50 PM', text:'leadflow 5 files edited'},
+    {time:'2:30 PM', text:'i18n.ts — translations'},
+  ],
+  tester: [
+    {time:'3:15 PM', text:'Stripe LeadFlow PASS 4.3/5'},
+    {time:'3:10 PM', text:'Checkout flow verified'},
+    {time:'3:05 PM', text:'Email reminders tested'},
+    {time:'3:00 PM', text:'Google OAuth flow OK'},
+    {time:'2:45 PM', text:'Mobile responsive OK'},
+  ],
+};
+
+function buildPanels(){
+  const grid = document.getElementById('panels-grid');
+  grid.innerHTML = '';
+  PANEL_AGENTS.forEach(key => {
+    const a = STATE.agents[key];
+    const events = PANEL_EVENTS[key] || [];
+    const statusColors = {working:'rgba(34,197,94,.2)',idle:'rgba(245,158,11,.15)',done:'rgba(34,197,94,.15)',blocked:'rgba(239,68,68,.2)'};
+    const statusText   = {working:'#4ade80',idle:'#fbbf24',done:'#4ade80',blocked:'#f87171'};
+    const progPct = a.status==='working' ? 65 : a.status==='done' ? 100 : 20;
+
+    const panel = document.createElement('div');
+    panel.className = 'agent-panel';
+    panel.style.borderColor = a.color+'33';
+    panel.innerHTML = `
+      <div class="panel-header">
+        <div class="panel-avatar" style="background:${a.color}22;border:1.5px solid ${a.color}55;color:${a.color}">${a.icon}</div>
+        <div class="panel-info">
+          <div class="panel-name" style="color:${a.color}">${a.name}</div>
+          <div class="panel-sub">${a.role}</div>
+        </div>
+        <div class="panel-status-badge" style="background:${statusColors[a.status]};color:${statusText[a.status]}">${a.status.toUpperCase()}</div>
+      </div>
+      <div class="panel-prog-bar" style="background:${a.color}22">
+        <div class="panel-prog-fill" style="width:${progPct}%;background:${a.color};height:3px"></div>
+      </div>
+      <div class="panel-events">
+        ${events.map(e=>`
+          <div class="panel-event">
+            <span class="pe-time">${e.time}</span>
+            <span class="pe-text">${e.text}</span>
+          </div>`).join('')}
+      </div>`;
+    grid.appendChild(panel);
+  });
 }
 
-function closePopup(e){
-  if(!e || e.target===document.getElementById('popup-overlay'))
-    document.getElementById('popup-overlay').classList.remove('open');
+/* ============================================================
+   MISSION CONTROL BAR — progress segments & clock
+============================================================ */
+function updateMCBar(){
+  // Segments fill levels based on state
+  const working = Object.values(STATE.agents).filter(a=>a.status==='working').length;
+  const done    = Object.values(STATE.agents).filter(a=>a.status==='done').length;
+  const total   = Object.keys(STATE.agents).length;
+  const progPct = Math.round((done/total)*100);
+
+  // Animate segments
+  const fills = [100, 100, 85, 60, 40, 15];
+  fills.forEach((f,i) => {
+    const el = document.getElementById('seg'+(i+1));
+    if(el) setTimeout(()=>{ el.style.width=f+'%'; }, 400 + i*80);
+  });
 }
 
-/* === CONTROLS === */
-function handleStart(){
-  document.getElementById('btn-start').style.cssText='background:rgba(34,197,94,.25);color:var(--green)';
-  document.getElementById('btn-stop').style.cssText='';
-}
-function handleStop(){
-  document.getElementById('btn-stop').style.cssText='background:rgba(239,68,68,.25);color:var(--red)';
-  document.getElementById('btn-start').style.cssText='';
-}
-function toggleJesus(){ STATE.jesus.present=!STATE.jesus.present; renderDesks(); }
-
-/* === CLOCK === */
 function updateClock(){
-  const n=new Date(), pad=v=>String(v).padStart(2,'0');
-  document.getElementById('clock').textContent=`${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
+  const n = new Date();
+  const pad = v => String(v).padStart(2,'0');
+  document.getElementById('mc-clock').textContent =
+    `${pad(n.getHours())}:${pad(n.getMinutes())}:${pad(n.getSeconds())}`;
 }
 
-/* === PARTICLES === */
-function createParticles(){
-  const cont = document.getElementById('particles');
-  const colors = ['#6366f1','#8b5cf6','#22c55e','#06b6d4'];
-  for(let i=0;i<22;i++){
-    const p = document.createElement('div');
-    p.className='particle';
-    const color = colors[i%colors.length];
-    p.style.cssText=`left:${Math.random()*100}%;--dur:${10+Math.random()*14}s;--delay:-${Math.random()*12}s;--drift:${(Math.random()-.5)*80}px;background:${color}`;
-    cont.appendChild(p);
-  }
-}
-
-/* === INIT === */
+/* ============================================================
+   INIT
+============================================================ */
 function init(){
-  createParticles();
-  renderDesks();
-  renderDashboard();
+  initParticles();
+  buildMarquee();
   buildFeed();
+  buildPanels();
+  updateMCBar();
   updateClock();
-  setInterval(updateClock,1000);
-
-  // Animated metric counters
-  const m = STATE.metrics;
-  let c=0,d=0,f=0;
-  const tick = setInterval(()=>{
-    c=Math.min(c+1,m.commits); d=Math.min(d+1,m.deploys); f=Math.min(f+1,m.files);
-    document.getElementById('m-commits').textContent=c;
-    document.getElementById('m-deploys').textContent=d;
-    document.getElementById('m-files').textContent=f;
-    if(f>=m.files) clearInterval(tick);
-  },60);
-
-  // Animate progress bar after paint
-  setTimeout(()=>{
-    document.getElementById('prog-fill').style.width=m.progress+'%';
-    document.getElementById('prog-pct').textContent=m.progress+'%';
-  },300);
-
-  handleStart();
+  setInterval(updateClock, 1000);
+  animLoop();
 }
 
-document.addEventListener('DOMContentLoaded',init);
+document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
