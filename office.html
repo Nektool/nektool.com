@@ -165,7 +165,7 @@ html,body{background:#0a0e14;color:#e2e8f0;font-family:Consolas,'Courier New',mo
 
 <!-- PIXEL ART CANVAS -->
 <div id="canvas-wrap">
-  <canvas id="office-canvas" width="1200" height="500"></canvas>
+  <canvas id="office-canvas" width="1000" height="420"></canvas>
 </div>
 
 <!-- MARQUEE -->
@@ -286,10 +286,10 @@ const PANEL_AGENTS = ['ares','developer','tester'];
 ============================================================ */
 const canvas = document.getElementById('office-canvas');
 const ctx = canvas.getContext('2d');
-const CW = 1200, CH = 500;
+const CW = 1000, CH = 420;
 
-// Block size: each pixel art "pixel" = 5 real pixels (larger = more defined)
-const B = 5;
+// Block size: each pixel art "pixel" = 4.5 real pixels
+const B = 4.5;
 
 // Tick counter for animations
 let tick = 0;
