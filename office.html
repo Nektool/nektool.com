@@ -43,6 +43,35 @@ html,body{background:#0a0e14;color:#e2e8f0;font-family:Consolas,'Courier New',mo
 #marquee-track .mitem{color:#4ade80;font-size:11px;padding:0 28px;letter-spacing:.04em}
 #marquee-track .mitem::before{content:'/// ';color:#6366f1;opacity:.7}
 
+/* === MISSIONS PANEL === */
+#missions-panel{
+  max-width:1000px;margin:16px auto;padding:0 18px;
+}
+#missions-header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 16px;background:#111827;border:1px solid #1e293b;border-radius:10px 10px 0 0;
+}
+#main-objective{
+  padding:12px 16px;background:#111827;border-left:1px solid #1e293b;border-right:1px solid #1e293b;
+}
+#missions-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:6px;
+  padding:0 16px 12px;background:#111827;border:1px solid #1e293b;border-top:none;border-radius:0 0 10px 10px;
+}
+.mission{
+  display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:6px;font-size:12px;
+  background:#0f172a;border:1px solid #1e293b;transition:all 0.3s;
+}
+.mission.completed{opacity:0.7;border-color:#16532a}
+.mission.completed .mission-check{color:#22c55e}
+.mission.completed .mission-text{color:#64748b;text-decoration:line-through}
+.mission.active .mission-check{color:#f59e0b}
+.mission.active .mission-text{color:#e2e8f0}
+.mission-text{flex:1}
+.mission-xp{color:#8b5cf6;font-weight:700;font-size:11px}
+@keyframes pulse-mission{0%,100%{opacity:1}50%{opacity:0.6}}
+.mission.active{animation:pulse-mission 2s ease-in-out infinite}
+
 /* === LIVE FEED === */
 #live-feed{
   max-width:1000px;margin:0 auto;padding:16px 18px;
@@ -136,12 +165,63 @@ html,body{background:#0a0e14;color:#e2e8f0;font-family:Consolas,'Courier New',mo
 
 <!-- PIXEL ART CANVAS -->
 <div id="canvas-wrap">
-  <canvas id="office-canvas" width="1000" height="420"></canvas>
+  <canvas id="office-canvas" width="1200" height="500"></canvas>
 </div>
 
 <!-- MARQUEE -->
 <div id="marquee-bar">
   <div id="marquee-track"></div>
+</div>
+
+<!-- MISSIONS & OBJECTIVES -->
+<div id="missions-panel">
+  <div id="missions-header">
+    <div style="display:flex;align-items:center;gap:8px">
+      <span style="font-size:18px">&#9876;</span>
+      <span style="color:#e2e8f0;font-weight:700;font-size:15px;letter-spacing:1px">MISSION CONTROL</span>
+    </div>
+    <span id="mission-timer" style="color:#4ade80;font-size:13px;font-family:monospace">00:00:00</span>
+  </div>
+
+  <!-- Main Objective -->
+  <div id="main-objective">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="color:#f59e0b;font-weight:700;font-size:12px;letter-spacing:1px">OBJETIVO PRINCIPAL</span>
+      <span style="color:#64748b;font-size:11px">29 dias restantes</span>
+    </div>
+    <div style="color:#e2e8f0;font-size:15px;font-weight:600;margin-bottom:8px">Primer ingreso real antes del 1 mayo 2026</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div style="flex:1;height:6px;background:#1e293b;border-radius:3px;overflow:hidden">
+        <div style="width:35%;height:100%;background:linear-gradient(90deg,#f59e0b,#eab308);border-radius:3px;transition:width 0.5s"></div>
+      </div>
+      <span style="color:#f59e0b;font-size:12px;font-weight:600">35%</span>
+    </div>
+  </div>
+
+  <!-- Hourly Missions Grid -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0 8px">
+    <span style="color:#6366f1;font-weight:700;font-size:12px;letter-spacing:1px">MISIONES DE LA SESION</span>
+    <span id="missions-score" style="color:#22c55e;font-size:13px;font-weight:700">5/8 completadas</span>
+  </div>
+  <div id="missions-grid">
+    <div class="mission completed"><span class="mission-check">&#10003;</span><span class="mission-text">Fix copy falso LeadFlow</span><span class="mission-xp">+50 XP</span></div>
+    <div class="mission completed"><span class="mission-check">&#10003;</span><span class="mission-text">Audit Stripe LeadFlow</span><span class="mission-xp">+75 XP</span></div>
+    <div class="mission completed"><span class="mission-check">&#10003;</span><span class="mission-text">Mapear 10 grupos FB</span><span class="mission-xp">+60 XP</span></div>
+    <div class="mission completed"><span class="mission-check">&#10003;</span><span class="mission-text">Demo restringida MargenKit</span><span class="mission-xp">+100 XP</span></div>
+    <div class="mission completed"><span class="mission-check">&#10003;</span><span class="mission-text">Infra autonomia (4 fases)</span><span class="mission-xp">+150 XP</span></div>
+    <div class="mission active"><span class="mission-check">&#9711;</span><span class="mission-text">Aprobar posts FB outreach</span><span class="mission-xp">+80 XP</span></div>
+    <div class="mission active"><span class="mission-check">&#9711;</span><span class="mission-text">Publicar en 2+ grupos FB</span><span class="mission-xp">+120 XP</span></div>
+    <div class="mission active"><span class="mission-check">&#9711;</span><span class="mission-text">Indexar MargenKit en Google</span><span class="mission-xp">+90 XP</span></div>
+  </div>
+
+  <!-- XP Bar -->
+  <div style="display:flex;align-items:center;gap:10px;margin-top:12px;padding:8px 12px;background:#0f172a;border-radius:8px;border:1px solid #1e293b">
+    <span style="color:#8b5cf6;font-weight:800;font-size:14px">LVL 19</span>
+    <div style="flex:1;height:8px;background:#1e293b;border-radius:4px;overflow:hidden">
+      <div style="width:68%;height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px"></div>
+    </div>
+    <span style="color:#a5b4fc;font-size:12px;font-weight:600">435 / 640 XP</span>
+  </div>
 </div>
 
 <!-- LIVE FEED -->
@@ -206,10 +286,10 @@ const PANEL_AGENTS = ['ares','developer','tester'];
 ============================================================ */
 const canvas = document.getElementById('office-canvas');
 const ctx = canvas.getContext('2d');
-const CW = 1000, CH = 420;
+const CW = 1200, CH = 500;
 
-// Block size: each pixel art "pixel" = 4 real pixels
-const B = 4;
+// Block size: each pixel art "pixel" = 5 real pixels (larger = more defined)
+const B = 5;
 
 // Tick counter for animations
 let tick = 0;
@@ -245,47 +325,106 @@ function drawRect(x,y,w,h,color){
 }
 
 // Draw pixel-art person at grid coords (gx, gy) = top-left of person
-function drawPerson(gx, gy, bodyColor, isWorking){
-  // Shadow under chair
-  ctx.fillStyle = 'rgba(0,0,0,0.3)';
-  ctx.fillRect(Math.round((gx-1)*B), Math.round((gy+7)*B), Math.round(8*B), Math.round(2*B));
+function drawPerson(gx, gy, bodyColor, isWorking, agentKey){
+  const skinTones = ['#f5c8a0','#e8b88a','#d4a574','#c49060','#a0724c'];
+  const hairColors = ['#3d2314','#1a1a2e','#8b6914','#c44','#222','#654321','#2d1b0e','#555','#8b4513','#d4a017'];
+  const agentKeys = Object.keys(STATE.agents);
+  const idx = agentKeys.indexOf(agentKey);
+  const skin = skinTones[idx % skinTones.length];
+  const hair = hairColors[idx % hairColors.length];
+  const darkerBody = shadeColor(bodyColor, -30);
 
-  // Chair legs
-  drawRect(gx,   gy+8, 1, 2, '#555');
-  drawRect(gx+3, gy+8, 1, 2, '#555');
+  // Shadow under chair
+  ctx.fillStyle = 'rgba(0,0,0,0.35)';
+  ctx.fillRect(Math.round((gx-1)*B), Math.round((gy+9)*B), Math.round(8*B), Math.round(1.5*B));
+
+  // Chair wheels (3 small circles)
+  drawRect(gx-0.5, gy+9.5, 1, 0.5, '#444');
+  drawRect(gx+1.5, gy+9.5, 1, 0.5, '#444');
+  drawRect(gx+3.5, gy+9.5, 1, 0.5, '#444');
+
+  // Chair stem
+  drawRect(gx+1.5, gy+8.5, 1, 1, '#555');
 
   // Chair seat
-  drawRect(gx-1, gy+6, 6, 2, '#666');
+  drawRect(gx-1, gy+7, 6, 1.5, '#555');
+  drawRect(gx-0.5, gy+6.5, 5, 0.5, '#666');
 
-  // Chair back
-  drawRect(gx,   gy+3, 4, 3, '#555');
+  // Chair back (curved)
+  drawRect(gx-0.5, gy+3.5, 1, 3, '#555');
+  drawRect(gx+3.5, gy+3.5, 1, 3, '#555');
+  drawRect(gx-0.5, gy+3, 5, 0.5, '#666');
 
-  // Body
-  drawRect(gx, gy+3, 4, 4, bodyColor);
+  // Legs on chair
+  drawRect(gx+0.5, gy+5.5, 1.5, 2, '#2a4a7a');
+  drawRect(gx+2, gy+5.5, 1.5, 2, '#2a4a7a');
+  // Shoes
+  drawRect(gx+0.5, gy+7.5, 1.5, 0.5, '#222');
+  drawRect(gx+2, gy+7.5, 1.5, 0.5, '#222');
 
-  // Head
-  const headColor = '#f5c8a0';
-  drawRect(gx+1, gy, 2, 2, headColor);
+  // Body / torso
+  drawRect(gx, gy+3, 4, 3, bodyColor);
+  // Collar / neckline
+  drawRect(gx+1, gy+3, 2, 0.5, darkerBody);
+  // Shirt detail
+  drawRect(gx+1.5, gy+3.5, 1, 2, darkerBody);
 
-  // Eyes (tiny)
+  // Arms
   if(isWorking){
-    ctx.fillStyle = '#1a1a2e';
-    ctx.fillRect(Math.round((gx+1.3)*B), Math.round((gy+0.5)*B), Math.round(0.5*B), Math.round(0.5*B));
-    ctx.fillRect(Math.round((gx+2.2)*B), Math.round((gy+0.5)*B), Math.round(0.5*B), Math.round(0.5*B));
-  }
-
-  // Arms (working = raised toward monitor)
-  if(isWorking){
-    drawRect(gx-1, gy+3, 1, 2, headColor);
-    drawRect(gx+4, gy+3, 1, 2, headColor);
+    // Arms forward (typing)
+    drawRect(gx-1, gy+3.5, 1, 1.5, skin);
+    drawRect(gx+4, gy+3.5, 1, 1.5, skin);
+    // Hands on desk level
+    drawRect(gx-1.5, gy+5, 1, 0.5, skin);
+    drawRect(gx+4.5, gy+5, 1, 0.5, skin);
   } else {
-    drawRect(gx-1, gy+4, 1, 3, headColor);
-    drawRect(gx+4, gy+4, 1, 3, headColor);
+    // Arms resting
+    drawRect(gx-1, gy+4, 1, 2.5, skin);
+    drawRect(gx+4, gy+4, 1, 2.5, skin);
   }
 
-  // Hair
-  ctx.fillStyle = '#3d2314';
-  ctx.fillRect(Math.round((gx+1)*B), Math.round(gy*B), Math.round(2*B), Math.round(0.5*B));
+  // Neck
+  drawRect(gx+1.5, gy+2.5, 1, 0.5, skin);
+
+  // Head (rounder - 3 wide, 2.5 tall)
+  drawRect(gx+0.5, gy+0.5, 3, 2, skin);
+  drawRect(gx+1, gy, 2, 0.5, skin);
+
+  // Eyes
+  ctx.fillStyle = '#1a1a2e';
+  ctx.fillRect(Math.round((gx+1)*B), Math.round((gy+1)*B), Math.round(0.6*B), Math.round(0.5*B));
+  ctx.fillRect(Math.round((gx+2.4)*B), Math.round((gy+1)*B), Math.round(0.6*B), Math.round(0.5*B));
+  // Eye whites
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(Math.round((gx+1.1)*B), Math.round((gy+1.05)*B), Math.round(0.3*B), Math.round(0.3*B));
+  ctx.fillRect(Math.round((gx+2.5)*B), Math.round((gy+1.05)*B), Math.round(0.3*B), Math.round(0.3*B));
+
+  // Mouth (subtle)
+  if(!isWorking){
+    ctx.fillStyle = '#c4856a';
+    ctx.fillRect(Math.round((gx+1.5)*B), Math.round((gy+1.8)*B), Math.round(1*B), Math.round(0.3*B));
+  }
+
+  // Hair (varied by agent)
+  ctx.fillStyle = hair;
+  drawRect(gx+0.5, gy, 3, 0.7, hair);
+  drawRect(gx+0.3, gy+0.3, 0.5, 1, hair);  // side hair left
+  drawRect(gx+3.2, gy+0.3, 0.5, 1, hair);  // side hair right
+  if(idx % 3 === 0){
+    // Spiky top hair
+    drawRect(gx+1, gy-0.3, 0.5, 0.5, hair);
+    drawRect(gx+2, gy-0.4, 0.5, 0.6, hair);
+  } else if(idx % 3 === 1){
+    // Longer side hair
+    drawRect(gx+0.2, gy+0.3, 0.5, 1.5, hair);
+    drawRect(gx+3.3, gy+0.3, 0.5, 1.5, hair);
+  }
+}
+
+function shadeColor(hex, amt){
+  const {r,g,b} = hexToRgb(hex);
+  const clamp = v => Math.max(0, Math.min(255, v + amt));
+  return `rgb(${clamp(r)},${clamp(g)},${clamp(b)})`;
 }
 
 function drawDesk(gx, gy, agentColor, screenGlow, label, isWorking){
@@ -329,11 +468,35 @@ function drawDesk(gx, gy, agentColor, screenGlow, label, isWorking){
   ctx.fillStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},${brightness})`;
   ctx.fillRect(Math.round(msx*B), Math.round((gy-monH-2)*B), Math.round(monW*B), Math.round(monH*B));
 
+  // Screen content (code lines, charts, text)
+  if(isWorking){
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    for(let ln=0; ln<3; ln++){
+      const lw = 2 + Math.sin(ln*2.7+tick*0.02)*1.5;
+      ctx.fillRect(Math.round((msx+0.5)*B), Math.round((gy-monH-1.5+ln*1.2)*B), Math.round(lw*B), Math.round(0.4*B));
+    }
+    // Cursor blink
+    if(tick % 30 < 15){
+      ctx.fillStyle = 'rgba(255,255,255,0.8)';
+      ctx.fillRect(Math.round((msx+4)*B), Math.round((gy-monH+0.5)*B), Math.round(0.3*B), Math.round(0.6*B));
+    }
+  } else {
+    // Idle screen: dim content
+    ctx.fillStyle = 'rgba(255,255,255,0.1)';
+    for(let ln=0; ln<2; ln++){
+      ctx.fillRect(Math.round((msx+0.5)*B), Math.round((gy-monH-1.5+ln*1.5)*B), Math.round(3*B), Math.round(0.3*B));
+    }
+  }
+
   // Screen scanlines (subtle)
-  ctx.fillStyle = 'rgba(0,0,0,0.15)';
+  ctx.fillStyle = 'rgba(0,0,0,0.12)';
   for(let i=0;i<monH;i+=2){
     ctx.fillRect(Math.round(msx*B), Math.round((gy-monH-2+i)*B), Math.round(monW*B), Math.round(B));
   }
+
+  // Monitor bezel highlight (top edge reflection)
+  ctx.fillStyle = 'rgba(255,255,255,0.08)';
+  ctx.fillRect(Math.round(msx*B), Math.round((gy-monH-2)*B), Math.round(monW*B), Math.round(0.5*B));
 
   // Keyboard on desk
   drawRect(gx+1, gy+0.5, 4, 1, '#333');
@@ -551,7 +714,7 @@ function drawScene(){
     // Draw person
     const personX = gx + 7;
     const personY = pos.row === 0 ? gy + 4 : gy + 3;
-    drawPerson(personX, personY, agent.color, isWorking);
+    drawPerson(personX, personY, agent.color, isWorking, key);
 
     // Typing animation particles for working agents
     if(isWorking && tick % 8 < 4){
@@ -622,6 +785,20 @@ function animLoop(){
   drawScene();
   requestAnimationFrame(animLoop);
 }
+
+/* ============================================================
+   MISSION TIMER
+============================================================ */
+const sessionStart = Date.now();
+setInterval(()=>{
+  const el = document.getElementById('mission-timer');
+  if(!el) return;
+  const elapsed = Date.now() - sessionStart;
+  const h = Math.floor(elapsed/3600000);
+  const m = Math.floor((elapsed%3600000)/60000);
+  const s = Math.floor((elapsed%60000)/1000);
+  el.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}, 1000);
 
 /* ============================================================
    MARQUEE
