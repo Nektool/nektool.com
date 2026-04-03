@@ -268,16 +268,16 @@ html,body{background:#0a0e14;color:#e2e8f0;font-family:Consolas,'Courier New',mo
 ============================================================ */
 const STATE = {
   agents: {
-    ares:        {name:'Ares',       role:'Coordinator',  status:'working', color:'#6366f1', lastAction:'Coordinando sesion 19',   icon:'A'},
-    ceo:         {name:'Atlas',      role:'Operations',   status:'idle',    color:'#8b5cf6', lastAction:'Asignaciones listas',      icon:'C'},
-    developer:   {name:'Forge',       role:'Full-Stack',   status:'working', color:'#22c55e', lastAction:'Oficina virtual',          icon:'D'},
-    tester:      {name:'Vigil',      role:'QA',           status:'done',    color:'#f59e0b', lastAction:'Stripe audit 4.3/5',       icon:'T'},
-    critic:      {name:'Lens',       role:'Product',      status:'idle',    color:'#ef4444', lastAction:'Pendiente evaluar',        icon:'P'},
-    ventas:      {name:'Pulse',      role:'Sales',        status:'working', color:'#06b6d4', lastAction:'Posts FB listos',          icon:'V'},
-    emprendedor: {name:'Scout',      role:'Ideas',        status:'done',    color:'#f97316', lastAction:'10 grupos FB',             icon:'R'},
-    pm:          {name:'Tempo',      role:'Projects',     status:'idle',    color:'#ec4899', lastAction:'Esperando dev-done',       icon:'M'},
-    finanzas:    {name:'Vault',      role:'Fiscal',       status:'idle',    color:'#14b8a6', lastAction:'Sin alertas',              icon:'F'},
-    legal:       {name:'Shield',     role:'Compliance',   status:'idle',    color:'#64748b', lastAction:'Sin pendientes',           icon:'L'}
+    ares:        {name:'Ares',       role:'Coordinator',  status:'done',    color:'#6366f1', lastAction:'Oficina virtual deployada', icon:'A'},
+    ceo:         {name:'Atlas',      role:'Operations',   status:'done',    color:'#8b5cf6', lastAction:'Asignaciones sesion 19',    icon:'C'},
+    developer:   {name:'Forge',      role:'Full-Stack',   status:'done',    color:'#22c55e', lastAction:'Demo MargenKit + office',   icon:'D'},
+    tester:      {name:'Vigil',      role:'QA',           status:'done',    color:'#f59e0b', lastAction:'Stripe audit 4.3/5',        icon:'T'},
+    critic:      {name:'Lens',       role:'Product',      status:'idle',    color:'#ef4444', lastAction:'Pendiente evaluar demo',     icon:'P'},
+    ventas:      {name:'Pulse',      role:'Sales',        status:'done',    color:'#06b6d4', lastAction:'Posts FB + directorios',     icon:'V'},
+    emprendedor: {name:'Scout',      role:'Ideas',        status:'done',    color:'#f97316', lastAction:'10 grupos FB mapeados',      icon:'R'},
+    pm:          {name:'Tempo',      role:'Projects',     status:'idle',    color:'#ec4899', lastAction:'Esperando dev-done',         icon:'M'},
+    finanzas:    {name:'Vault',      role:'Fiscal',       status:'idle',    color:'#14b8a6', lastAction:'Sin alertas',                icon:'F'},
+    legal:       {name:'Shield',     role:'Compliance',   status:'idle',    color:'#64748b', lastAction:'Sin pendientes',             icon:'L'}
   },
   events: [
     {time:'4:15 PM',type:'DEPLOY',  agent:'Ares',      text:'Office virtual deployada a nektool.com/office.html'},
