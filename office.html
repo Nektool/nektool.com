@@ -767,90 +767,104 @@ function drawScene(){
   ctx.textAlign = 'center';
   ctx.fillText('CAFE', Math.round((coffeeX+3)*B), Math.round((coffeeY+11)*B));
 
-  // === JESUS WALKING (visits desks, animated path) ===
-  const jesusSpeed = 0.003;
-  const jesusProgress = (tick * jesusSpeed) % 1;
-  const jesusPath = positions.map(p => ({x: Math.round(p.x/B) + 2, y: Math.round(p.y/B) + 12}));
-  // Add coffee machine visit
-  jesusPath.push({x: coffeeX + 3, y: coffeeY + 12});
-  const pathIdx = Math.floor(jesusProgress * jesusPath.length);
-  const jp = jesusPath[pathIdx];
-  if(jp){
-    // Walking animation (leg movement)
-    const walkFrame = tick % 16 < 8;
-    // Shadow
-    ctx.fillStyle = 'rgba(0,0,0,0.2)';
-    ctx.fillRect(Math.round((jp.x-1)*B), Math.round((jp.y+4)*B), Math.round(5*B), Math.round(B));
-    // Legs
-    if(walkFrame){
-      drawRect(jp.x, jp.y+2, 1.5, 2, '#1a3a6a');
-      drawRect(jp.x+1.5, jp.y+1.5, 1.5, 2.5, '#1a3a6a');
-    } else {
-      drawRect(jp.x, jp.y+1.5, 1.5, 2.5, '#1a3a6a');
-      drawRect(jp.x+1.5, jp.y+2, 1.5, 2, '#1a3a6a');
-    }
-    // Shoes
-    drawRect(jp.x, jp.y+3.5, 1.5, 0.5, '#111');
-    drawRect(jp.x+1.5, jp.y+3.5, 1.5, 0.5, '#111');
-    // Body (shirt)
-    drawRect(jp.x, jp.y, 3, 2, '#1e40af');
-    // Head
-    drawRect(jp.x+0.5, jp.y-2, 2, 2, '#f5c8a0');
-    // Hair
-    drawRect(jp.x+0.5, jp.y-2.3, 2, 0.5, '#1a1a1a');
-    // Eyes
-    ctx.fillStyle = '#1a1a2e';
-    ctx.fillRect(Math.round((jp.x+0.8)*B), Math.round((jp.y-1.3)*B), Math.round(0.4*B), Math.round(0.4*B));
-    ctx.fillRect(Math.round((jp.x+1.8)*B), Math.round((jp.y-1.3)*B), Math.round(0.4*B), Math.round(0.4*B));
-    // Coffee cup in hand
-    drawRect(jp.x+3, jp.y+0.5, 1, 1.5, '#ddd');
-    drawRect(jp.x+3, jp.y+0.5, 1, 0.3, '#8b4513');
-    // Label
-    ctx.fillStyle = 'rgba(255,215,0,0.7)';
-    ctx.font = `bold ${1.8*B}px monospace`;
-    ctx.textAlign = 'center';
-    ctx.fillText('JESUS', Math.round((jp.x+1.5)*B), Math.round((jp.y-3)*B));
-    // Investor badge
-    ctx.fillStyle = 'rgba(255,215,0,0.3)';
-    ctx.fillRect(Math.round((jp.x-0.5)*B), Math.round((jp.y-3.5)*B), Math.round(4*B), Math.round(1.2*B));
+  // === JESUS — walks smoothly between desks ===
+  // Build waypoints: each desk + coffee machine, in a natural patrol order
+  if(!window._jesusWaypoints){
+    const wp = [];
+    // Visit desks in a natural path: back row L→R, then front row R→L, then coffee
+    for(let i=0;i<5;i++) wp.push({x: Math.round(positions[i].x/B)+14, y: Math.round(positions[i].y/B)+6});
+    wp.push({x: coffeeX+3, y: coffeeY+6}); // coffee break
+    for(let i=9;i>=5;i--) wp.push({x: Math.round(positions[i].x/B)+14, y: Math.round(positions[i].y/B)+5});
+    window._jesusWaypoints = wp;
+    window._jesusX = wp[0].x;
+    window._jesusY = wp[0].y;
+    window._jesusWpIdx = 0;
+    window._jesusPause = 0;
   }
+  const wp = window._jesusWaypoints;
+  const target = wp[window._jesusWpIdx];
+  const speed = 0.15;
 
-  // === IDLE AGENTS WANDERING ===
-  positions.forEach((pos, i) => {
-    const key = DESK_AGENTS[i];
-    const agent = STATE.agents[key];
-    if(!agent || agent.status !== 'idle') return;
-
-    // Some idle agents wander (based on tick, each agent has different phase)
-    const phase = (tick * 0.01 + i * 1.7) % 6.28;
-    const isWandering = Math.sin(phase) > 0.3; // ~40% of time wandering
-
-    if(isWandering){
-      const gx = Math.round(pos.x/B) - 9;
-      const gy = Math.round(pos.y/B);
-      const wanderX = gx + 7 + Math.sin(tick * 0.02 + i * 2) * 5;
-      const wanderY = gy + 10 + Math.cos(tick * 0.015 + i * 3) * 2;
-      const wf = tick % 12 < 6;
-
-      // Shadow
-      ctx.fillStyle = 'rgba(0,0,0,0.15)';
-      ctx.fillRect(Math.round((wanderX-0.5)*B), Math.round((wanderY+4)*B), Math.round(4*B), Math.round(0.5*B));
-      // Legs (walking)
-      if(wf){
-        drawRect(wanderX, wanderY+2, 1.5, 2, '#2a4a7a');
-        drawRect(wanderX+1.5, wanderY+1.5, 1.5, 2.5, '#2a4a7a');
-      } else {
-        drawRect(wanderX, wanderY+1.5, 1.5, 2.5, '#2a4a7a');
-        drawRect(wanderX+1.5, wanderY+2, 1.5, 2, '#2a4a7a');
-      }
-      // Body
-      const rgb = hexToRgb(agent.color);
-      ctx.fillStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},0.6)`;
-      ctx.fillRect(Math.round(wanderX*B), Math.round(wanderY*B), Math.round(3*B), Math.round(2*B));
-      // Head
-      drawRect(wanderX+0.5, wanderY-1.5, 2, 1.5, '#f5c8a0');
+  // Pause at each desk for ~120 ticks (looks like observing)
+  if(window._jesusPause > 0){
+    window._jesusPause--;
+  } else {
+    const dx = target.x - window._jesusX;
+    const dy = target.y - window._jesusY;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if(dist < 0.3){
+      // Arrived — pause and pick next waypoint
+      window._jesusPause = 80 + Math.floor(Math.random()*80); // 80-160 ticks pause
+      window._jesusWpIdx = (window._jesusWpIdx + 1) % wp.length;
+    } else {
+      window._jesusX += (dx/dist) * speed;
+      window._jesusY += (dy/dist) * speed;
     }
-  });
+  }
+  const jx = window._jesusX;
+  const jy = window._jesusY;
+  const isWalking = window._jesusPause === 0;
+  {
+
+    // Shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.fillRect(Math.round((jx-0.5)*B), Math.round((jy+4.5)*B), Math.round(5*B), Math.round(B));
+
+    // Walking leg animation
+    const legPhase = isWalking ? Math.sin(tick * 0.15) * 0.4 : 0;
+
+    // Shoes
+    drawRect(jx+0.5, jy+4+legPhase*0.3, 1, 0.5, '#1a1a1a');
+    drawRect(jx+2, jy+4-legPhase*0.3, 1, 0.5, '#1a1a1a');
+    // Pants
+    drawRect(jx+0.5, jy+2.5, 1.2, 1.5+legPhase*0.3, '#1e3a5f');
+    drawRect(jx+1.8, jy+2.5, 1.2, 1.5-legPhase*0.3, '#1e3a5f');
+    // Belt
+    drawRect(jx, jy+2.3, 3.5, 0.3, '#444');
+    // Shirt
+    drawRect(jx, jy+0.5, 3.5, 2, '#1e40af');
+    // Collar
+    drawRect(jx+1, jy+0.3, 1.5, 0.4, '#fff');
+    // Arms - one hand in pocket, one holding coffee
+    drawRect(jx-0.5, jy+1, 0.8, 1.8, '#f0c090');
+    drawRect(jx+3.5, jy+0.8, 0.8, 1.5, '#f0c090');
+    // Coffee cup in right hand
+    drawRect(jx+3.3, jy+0.2, 1.2, 1, '#eee');
+    drawRect(jx+3.5, jy+0.2, 0.8, 0.2, '#8b4513');
+    // Steam from coffee
+    if(tick % 30 < 15){
+      ctx.fillStyle = 'rgba(255,255,255,0.2)';
+      ctx.fillRect(Math.round((jx+3.6)*B), Math.round((jy-0.5)*B), Math.round(0.4*B), Math.round(0.6*B));
+    }
+    // Neck
+    drawRect(jx+1.2, jy, 1, 0.5, '#f0c090');
+    // Head
+    drawRect(jx+0.5, jy-2, 2.5, 2, '#f0c090');
+    drawRect(jx+1, jy-2.3, 1.5, 0.5, '#f0c090');
+    // Eyes - looking at monitor
+    ctx.fillStyle = '#1a1a2e';
+    ctx.fillRect(Math.round((jx+1)*B), Math.round((jy-1.2)*B), Math.round(0.5*B), Math.round(0.4*B));
+    ctx.fillRect(Math.round((jx+2)*B), Math.round((jy-1.2)*B), Math.round(0.5*B), Math.round(0.4*B));
+    // Eye whites
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(Math.round((jx+1.1)*B), Math.round((jy-1.15)*B), Math.round(0.25*B), Math.round(0.25*B));
+    ctx.fillRect(Math.round((jx+2.1)*B), Math.round((jy-1.15)*B), Math.round(0.25*B), Math.round(0.25*B));
+    // Hair
+    drawRect(jx+0.5, jy-2.3, 2.5, 0.5, '#1a1a1a');
+    drawRect(jx+0.3, jy-1.8, 0.4, 0.8, '#1a1a1a');
+    drawRect(jx+2.8, jy-1.8, 0.4, 0.8, '#1a1a1a');
+    // Smile
+    ctx.fillStyle = '#c4856a';
+    ctx.fillRect(Math.round((jx+1.3)*B), Math.round((jy-0.5)*B), Math.round(0.8*B), Math.round(0.2*B));
+
+    // Gold badge "INVERSOR"
+    ctx.fillStyle = 'rgba(255,215,0,0.15)';
+    ctx.fillRect(Math.round((jx-0.5)*B), Math.round((jy-3.5)*B), Math.round(5*B), Math.round(1.3*B));
+    ctx.fillStyle = 'rgba(255,215,0,0.8)';
+    ctx.font = `bold ${1.6*B}px monospace`;
+    ctx.textAlign = 'center';
+    ctx.fillText('INVERSOR', Math.round((jx+1.7)*B), Math.round((jy-2.6)*B));
+  }
 
   // === AMBIENT PARTICLES ===
   drawParticles();
