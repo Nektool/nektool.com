@@ -757,10 +757,16 @@ function drawScene(){
     ctx.globalAlpha = 1;
 
     // Agent name label
-    ctx.fillStyle = 'rgba(226,232,240,0.8)';
-    ctx.font = `${2*B}px monospace`;
+    ctx.fillStyle = 'rgba(226,232,240,0.9)';
+    ctx.font = `bold ${2*B}px monospace`;
     ctx.textAlign = 'center';
-    ctx.fillText(agent.name, Math.round((gx+9)*B), Math.round((gy+17)*B));
+    ctx.fillText(agent.name, Math.round((gx+9)*B), Math.round((gy+15)*B));
+
+    // Task label — what they're working on
+    ctx.fillStyle = 'rgba(74,222,128,0.6)';
+    ctx.font = `${1.4*B}px monospace`;
+    const taskText = agent.lastAction.length > 22 ? agent.lastAction.slice(0,20)+'...' : agent.lastAction;
+    ctx.fillText(taskText, Math.round((gx+9)*B), Math.round((gy+17.5)*B));
   });
 
   // === COFFEE MACHINE (right side, near floor) ===
