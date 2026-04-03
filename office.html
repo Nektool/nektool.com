@@ -268,16 +268,16 @@ html,body{background:#0a0e14;color:#e2e8f0;font-family:Consolas,'Courier New',mo
 ============================================================ */
 const STATE = {
   agents: {
-    ares:        {name:'Ares',       role:'Coordinator',  status:'done',    color:'#6366f1', lastAction:'Oficina virtual deployada', icon:'A'},
-    ceo:         {name:'Atlas',      role:'Operations',   status:'done',    color:'#8b5cf6', lastAction:'Asignaciones sesion 19',    icon:'C'},
-    developer:   {name:'Forge',      role:'Full-Stack',   status:'done',    color:'#22c55e', lastAction:'Demo MargenKit + office',   icon:'D'},
-    tester:      {name:'Vigil',      role:'QA',           status:'done',    color:'#f59e0b', lastAction:'Stripe audit 4.3/5',        icon:'T'},
-    critic:      {name:'Lens',       role:'Product',      status:'idle',    color:'#ef4444', lastAction:'Pendiente evaluar demo',     icon:'P'},
-    ventas:      {name:'Pulse',      role:'Sales',        status:'done',    color:'#06b6d4', lastAction:'Posts FB + directorios',     icon:'V'},
-    emprendedor: {name:'Scout',      role:'Ideas',        status:'done',    color:'#f97316', lastAction:'10 grupos FB mapeados',      icon:'R'},
-    pm:          {name:'Tempo',      role:'Projects',     status:'idle',    color:'#ec4899', lastAction:'Esperando dev-done',         icon:'M'},
-    finanzas:    {name:'Vault',      role:'Fiscal',       status:'idle',    color:'#14b8a6', lastAction:'Sin alertas',                icon:'F'},
-    legal:       {name:'Shield',     role:'Compliance',   status:'idle',    color:'#64748b', lastAction:'Sin pendientes',             icon:'L'}
+    ares:        {name:'Ares',       role:'Coordinator',  status:'working', color:'#6366f1', lastAction:'Monitoreando equipo',       icon:'A'},
+    ceo:         {name:'Atlas',      role:'Operations',   status:'working', color:'#8b5cf6', lastAction:'Pensando estrategia ingresos', icon:'C'},
+    developer:   {name:'Forge',      role:'Full-Stack',   status:'working', color:'#22c55e', lastAction:'6 fixes P0 en cola',         icon:'D'},
+    tester:      {name:'Vigil',      role:'QA',           status:'working', color:'#f59e0b', lastAction:'Validando demo MargenKit',   icon:'T'},
+    critic:      {name:'Lens',       role:'Product',      status:'working', color:'#ef4444', lastAction:'Evaluando demo vs competencia', icon:'P'},
+    ventas:      {name:'Pulse',      role:'Sales',        status:'working', color:'#06b6d4', lastAction:'Preparando outreach FB',     icon:'V'},
+    emprendedor: {name:'Scout',      role:'Ideas',        status:'working', color:'#f97316', lastAction:'Investigando nuevas ideas',   icon:'R'},
+    pm:          {name:'Tempo',      role:'Projects',     status:'working', color:'#ec4899', lastAction:'Coordinando pipeline dev',    icon:'M'},
+    finanzas:    {name:'Vault',      role:'Fiscal',       status:'working', color:'#14b8a6', lastAction:'Analizando runway abril',     icon:'F'},
+    legal:       {name:'Shield',     role:'Compliance',   status:'working', color:'#64748b', lastAction:'Revisando compliance IMPI',   icon:'L'}
   },
   events: [
     {time:'4:15 PM',type:'DEPLOY',  agent:'Ares',      text:'Office virtual deployada a nektool.com/office.html'},
@@ -724,33 +724,32 @@ function drawScene(){
     const agent = STATE.agents[key];
     if(!agent) return;
 
+    // Only render agents that are working — done/idle agents leave the office
+    if(agent.status !== 'working') return;
+
     // Convert pixel positions to grid coords
     const gx = Math.round(pos.x/B) - 9;
     const gy = Math.round(pos.y/B);
 
-    const isWorking = agent.status === 'working';
-    const isIdle    = agent.status === 'idle';
-
     // Draw desk
-    drawDesk(gx, gy, agent.color, isWorking, agent.icon, isWorking);
+    drawDesk(gx, gy, agent.color, true, agent.icon, true);
 
     // Draw person
     const personX = gx + 7;
     const personY = pos.row === 0 ? gy + 4 : gy + 3;
-    drawPerson(personX, personY, agent.color, isWorking, key);
+    drawPerson(personX, personY, agent.color, true, key);
 
-    // Typing animation particles for working agents
-    if(isWorking && tick % 8 < 4){
+    // Typing animation particles
+    if(tick % 8 < 4){
       const rgb = hexToRgb(agent.color);
       ctx.fillStyle = `rgba(${rgb.r},${rgb.g},${rgb.b},0.7)`;
       const offsetX = (tick % 3)*2 - 2;
       ctx.fillRect(Math.round((gx+5+offsetX)*B), Math.round((gy-1)*B), B, B);
     }
 
-    // Status indicator dot below desk
-    const dotColors = {working:'#22c55e',idle:'#f59e0b',done:'#22c55e',blocked:'#ef4444'};
-    const dotAlpha = (agent.status==='working') ? 0.8+0.2*Math.sin(tick*0.1+i) : 0.5;
-    ctx.fillStyle = dotColors[agent.status] || '#666';
+    // Green pulse dot below desk
+    const dotAlpha = 0.8+0.2*Math.sin(tick*0.1+i);
+    ctx.fillStyle = '#22c55e';
     ctx.globalAlpha = dotAlpha;
     ctx.beginPath();
     ctx.arc(Math.round((gx+9)*B), Math.round((gy+14)*B), 3, 0, Math.PI*2);
