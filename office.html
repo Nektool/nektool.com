@@ -105,7 +105,7 @@ html,body{background:#0a0e14;color:#e2e8f0;font-family:Consolas,'Courier New',mo
 #panels-section{
   max-width:1000px;margin:0 auto;padding:16px 18px 24px;
 }
-#panels-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+#panels-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
 .agent-panel{
   background:#111827;border:1px solid #1e293b;border-radius:8px;overflow:hidden;
   display:flex;flex-direction:column;min-height:220px;
@@ -302,7 +302,7 @@ const STATE = {
   metrics:{commits:5, deploys:3, mrr:0, clients:0, deadline:29, products:2}
 };
 
-const PANEL_AGENTS = ['ares','developer','tester'];
+const PANEL_AGENTS = ['ares','ceo','developer','tester','critic','ventas','emprendedor','pm','finanzas','legal'];
 
 /* ============================================================
    CANVAS — PIXEL ART OFFICE
@@ -1017,6 +1017,43 @@ const PANEL_EVENTS = {
     {time:'3:05 PM', text:'Email reminders tested'},
     {time:'3:00 PM', text:'Google OAuth flow OK'},
     {time:'2:45 PM', text:'Mobile responsive OK'},
+  ],
+  ceo: [
+    {time:'3:30 PM', text:'Decision #53-57 tomadas'},
+    {time:'3:00 PM', text:'Plan crecimiento semanal'},
+    {time:'2:50 PM', text:'Asignaciones sesion 19'},
+    {time:'2:45 PM', text:'Analisis OpenClaw pausado'},
+  ],
+  critic: [
+    {time:'3:45 PM', text:'Evaluando demo /demo'},
+    {time:'3:00 PM', text:'LeadFlow 6.1/10 ronda final'},
+    {time:'2:30 PM', text:'nektool.com 7.0/10'},
+  ],
+  ventas: [
+    {time:'3:40 PM', text:'3 posts FB redactados'},
+    {time:'3:30 PM', text:'Listados 4 directorios'},
+    {time:'3:10 PM', text:'3 infografias SVG'},
+    {time:'2:55 PM', text:'Grupos FB investigados'},
+  ],
+  emprendedor: [
+    {time:'3:15 PM', text:'10 grupos FB mapeados'},
+    {time:'3:00 PM', text:'WhatsApp/Telegram research'},
+    {time:'2:50 PM', text:'Hashtags TikTok ML MX'},
+  ],
+  pm: [
+    {time:'3:30 PM', text:'Pipeline dev→test→deploy'},
+    {time:'2:50 PM', text:'Brief developer revisado'},
+    {time:'2:45 PM', text:'Dependencias mapeadas'},
+  ],
+  finanzas: [
+    {time:'3:00 PM', text:'Runway abril calculado'},
+    {time:'2:50 PM', text:'Break even 11 clientes'},
+    {time:'2:45 PM', text:'Claude $1,780 MXN abril'},
+  ],
+  legal: [
+    {time:'3:00 PM', text:'IMPI registro pendiente'},
+    {time:'2:50 PM', text:'LFPDPPP compliance OK'},
+    {time:'2:45 PM', text:'ToS actualizado'},
   ],
 };
 
