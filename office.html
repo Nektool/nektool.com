@@ -201,9 +201,9 @@ html,body{background:#0a0e14;color:#e2e8f0;font-family:Consolas,'Courier New',mo
     </div>
   </div>
 
-  <!-- Hourly Missions Grid -->
+  <!-- Team Missions -->
   <div style="display:flex;justify-content:space-between;align-items:center;margin:12px 0 8px">
-    <span style="color:#6366f1;font-weight:700;font-size:12px;letter-spacing:1px">MISIONES DE LA SESION</span>
+    <span style="color:#6366f1;font-weight:700;font-size:12px;letter-spacing:1px">MISIONES DEL EQUIPO</span>
     <span id="missions-score" style="color:#22c55e;font-size:13px;font-weight:700">5/8 completadas</span>
   </div>
   <div id="missions-grid">
@@ -212,9 +212,9 @@ html,body{background:#0a0e14;color:#e2e8f0;font-family:Consolas,'Courier New',mo
     <div class="mission completed"><span class="mission-check">&#10003;</span><span class="mission-text">Mapear 10 grupos FB</span><span class="mission-xp">+60 XP</span></div>
     <div class="mission completed"><span class="mission-check">&#10003;</span><span class="mission-text">Demo restringida MargenKit</span><span class="mission-xp">+100 XP</span></div>
     <div class="mission completed"><span class="mission-check">&#10003;</span><span class="mission-text">Infra autonomia (4 fases)</span><span class="mission-xp">+150 XP</span></div>
-    <div class="mission active"><span class="mission-check">&#9711;</span><span class="mission-text">Aprobar posts FB outreach</span><span class="mission-xp">+80 XP</span></div>
     <div class="mission active"><span class="mission-check">&#9711;</span><span class="mission-text">Publicar en 2+ grupos FB</span><span class="mission-xp">+120 XP</span></div>
     <div class="mission active"><span class="mission-check">&#9711;</span><span class="mission-text">Indexar MargenKit en Google</span><span class="mission-xp">+90 XP</span></div>
+    <div class="mission active"><span class="mission-check">&#9711;</span><span class="mission-text">6 fixes P0 sesion 18</span><span class="mission-xp">+80 XP</span></div>
   </div>
 
   <!-- XP Bar -->
@@ -224,6 +224,26 @@ html,body{background:#0a0e14;color:#e2e8f0;font-family:Consolas,'Courier New',mo
       <div style="width:68%;height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px"></div>
     </div>
     <span style="color:#a5b4fc;font-size:12px;font-weight:600">435 / 640 XP</span>
+  </div>
+
+  <!-- Jesus Pending Tasks (separate from team XP) -->
+  <div style="margin-top:16px;padding:12px 16px;background:#1a1207;border:1px solid #854d0e;border-radius:10px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <span style="color:#fbbf24;font-weight:700;font-size:12px;letter-spacing:1px">PENDIENTES JESUS (Inversor)</span>
+      <span style="color:#854d0e;font-size:11px">No afectan XP del equipo</span>
+    </div>
+    <div class="mission active" style="border-color:#854d0e;background:#1a1207;animation:none">
+      <span class="mission-check" style="color:#fbbf24">&#9670;</span>
+      <span class="mission-text">Aprobar posts FB para outreach</span>
+    </div>
+    <div class="mission active" style="border-color:#854d0e;background:#1a1207;margin-top:6px;animation:none">
+      <span class="mission-check" style="color:#fbbf24">&#9670;</span>
+      <span class="mission-text">NekDesk (#087) — aprobar o rechazar</span>
+    </div>
+    <div class="mission active" style="border-color:#854d0e;background:#1a1207;margin-top:6px;animation:none">
+      <span class="mission-check" style="color:#fbbf24">&#9670;</span>
+      <span class="mission-text">Login Search Console — indexar MargenKit</span>
+    </div>
   </div>
 </div>
 
@@ -249,15 +269,15 @@ html,body{background:#0a0e14;color:#e2e8f0;font-family:Consolas,'Courier New',mo
 const STATE = {
   agents: {
     ares:        {name:'Ares',       role:'Coordinator',  status:'working', color:'#6366f1', lastAction:'Coordinando sesion 19',   icon:'A'},
-    ceo:         {name:'CEO',        role:'Operations',   status:'idle',    color:'#8b5cf6', lastAction:'Asignaciones listas',      icon:'C'},
-    developer:   {name:'Developer',  role:'Full-Stack',   status:'working', color:'#22c55e', lastAction:'Oficina virtual',          icon:'D'},
-    tester:      {name:'Tester',     role:'QA',           status:'done',    color:'#f59e0b', lastAction:'Stripe audit 4.3/5',       icon:'T'},
-    critic:      {name:'Critic',     role:'Product',      status:'idle',    color:'#ef4444', lastAction:'Pendiente evaluar',        icon:'P'},
-    ventas:      {name:'Ventas',     role:'Sales',        status:'working', color:'#06b6d4', lastAction:'Posts FB listos',          icon:'V'},
-    emprendedor: {name:'Research',   role:'Ideas',        status:'done',    color:'#f97316', lastAction:'10 grupos FB',             icon:'R'},
-    pm:          {name:'PM',         role:'Projects',     status:'idle',    color:'#ec4899', lastAction:'Esperando dev-done',       icon:'M'},
-    finanzas:    {name:'Finance',    role:'Fiscal',       status:'idle',    color:'#14b8a6', lastAction:'Sin alertas',              icon:'F'},
-    legal:       {name:'Legal',      role:'Compliance',   status:'idle',    color:'#64748b', lastAction:'Sin pendientes',           icon:'L'}
+    ceo:         {name:'Atlas',      role:'Operations',   status:'idle',    color:'#8b5cf6', lastAction:'Asignaciones listas',      icon:'C'},
+    developer:   {name:'Forge',       role:'Full-Stack',   status:'working', color:'#22c55e', lastAction:'Oficina virtual',          icon:'D'},
+    tester:      {name:'Vigil',      role:'QA',           status:'done',    color:'#f59e0b', lastAction:'Stripe audit 4.3/5',       icon:'T'},
+    critic:      {name:'Lens',       role:'Product',      status:'idle',    color:'#ef4444', lastAction:'Pendiente evaluar',        icon:'P'},
+    ventas:      {name:'Pulse',      role:'Sales',        status:'working', color:'#06b6d4', lastAction:'Posts FB listos',          icon:'V'},
+    emprendedor: {name:'Scout',      role:'Ideas',        status:'done',    color:'#f97316', lastAction:'10 grupos FB',             icon:'R'},
+    pm:          {name:'Tempo',      role:'Projects',     status:'idle',    color:'#ec4899', lastAction:'Esperando dev-done',       icon:'M'},
+    finanzas:    {name:'Vault',      role:'Fiscal',       status:'idle',    color:'#14b8a6', lastAction:'Sin alertas',              icon:'F'},
+    legal:       {name:'Shield',     role:'Compliance',   status:'idle',    color:'#64748b', lastAction:'Sin pendientes',           icon:'L'}
   },
   events: [
     {time:'4:15 PM',type:'DEPLOY',  agent:'Ares',      text:'Office virtual deployada a nektool.com/office.html'},
@@ -863,7 +883,7 @@ function drawScene(){
     ctx.fillStyle = 'rgba(255,215,0,0.8)';
     ctx.font = `bold ${1.6*B}px monospace`;
     ctx.textAlign = 'center';
-    ctx.fillText('INVERSOR', Math.round((jx+1.7)*B), Math.round((jy-2.6)*B));
+    ctx.fillText('INVESTOR (Jesus)', Math.round((jx+1.7)*B), Math.round((jy-2.6)*B));
   }
 
   // === AMBIENT PARTICLES ===
