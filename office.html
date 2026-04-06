@@ -960,13 +960,33 @@ setInterval(()=>{
 }, 1000);
 
 /* ============================================================
-   LIVE STATE — fetch state.json every 30s
+   LIVE STATE — fetch from Supabase (remote) or state.json (local)
 ============================================================ */
+const SUPABASE_URL = 'https://ueuzaodrfmphapzmxuzh.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVldXphb2RyZm1waGFwem14dXpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ1OTEyNDQsImV4cCI6MjA5MDE2NzI0NH0.YNf4gYt5oCH_bEIUiE_ZFmnOl5CI6q7G9FVkbcqzJio';
+
 async function fetchState(){
   try {
-    const res = await fetch('/state.json?t='+Date.now());
-    if(!res.ok) return;
-    const data = await res.json();
+    let data;
+    // Try Supabase first (works from nektool.com and phone)
+    try {
+      const sbRes = await fetch(SUPABASE_URL+'/rest/v1/team_state?select=state&id=eq.1', {
+        headers: {'apikey': SUPABASE_KEY}
+      });
+      if(sbRes.ok){
+        const rows = await sbRes.json();
+        if(rows.length > 0 && rows[0].state && rows[0].state.agents) {
+          data = rows[0].state;
+        }
+      }
+    } catch(e){}
+    // Fallback to local state.json
+    if(!data){
+      const res = await fetch('/state.json?t='+Date.now());
+      if(!res.ok) return;
+      data = await res.json();
+    }
+    if(!data) return;
 
     // Update agent statuses
     Object.keys(data.agents).forEach(key => {
@@ -1025,20 +1045,17 @@ setInterval(fetchState, 30000);
    MARQUEE
 ============================================================ */
 function buildMarquee(){
-  const items = [
-    '/// NEKTOOL TEAM ///',
-    'DEVELOPER: Working on virtual office',
-    'TESTER: Stripe audit 4.3/5 — PASS',
-    'VENTAS: 3 posts FB listos para publicar',
-    'SCOUT: 10 grupos ML MX mapeados',
-    'DEPLOY: LeadFlow fix live',
-    'DEPLOY: MargenKit demo live',
-    'ARES: Sesion 19 activa',
-    '2 PRODUCTS LIVE: MargenKit + LeadFlow',
-    'TARGET: 1er cliente antes de Mayo 2026',
-    'BUILD OK // DEPLOY OK // SYSTEM NOMINAL',
-    '>>> NEKTOOL.COM <<<'
-  ];
+  // Build from live agent data
+  const items = ['/// NEKTOOL TEAM ///'];
+  Object.entries(STATE.agents).forEach(([key, agent]) => {
+    const names = {ares:'ARES',ceo:'ATLAS',developer:'FORGE',tester:'VIGIL',critic:'LENS',ventas:'PULSE',emprendedor:'SCOUT',pm:'TEMPO',finanzas:'VAULT',legal:'SHIELD'};
+    const name = names[key] || key.toUpperCase();
+    const status = agent.status === 'working' ? '●' : '○';
+    items.push(`${status} ${name}: ${agent.lastAction || '-'}`);
+  });
+  items.push(STATE.metrics.products + ' PRODUCTS LIVE');
+  items.push('TARGET: 1er cliente antes de Mayo 2026');
+  items.push('>>> NEKTOOL.COM <<<');
   const doubled = [...items, ...items];
   const track = document.getElementById('marquee-track');
   track.innerHTML = doubled.map(t=>`<span class="mitem">${t}</span>`).join('');
