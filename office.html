@@ -190,7 +190,7 @@ html,body{background:#0a0e14;color:#e2e8f0;font-family:Consolas,'Courier New',mo
   <div id="main-objective">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
       <span style="color:#f59e0b;font-weight:700;font-size:12px;letter-spacing:1px">OBJETIVO PRINCIPAL</span>
-      <span style="color:#64748b;font-size:11px">29 dias restantes</span>
+      <span id="days-remaining" style="color:#64748b;font-size:11px">-- dias restantes</span>
     </div>
     <div style="color:#e2e8f0;font-size:15px;font-weight:600;margin-bottom:8px">Primer ingreso real antes del 1 mayo 2026</div>
     <div style="display:flex;align-items:center;gap:8px">
@@ -938,26 +938,35 @@ function animLoop(){
 }
 
 /* ============================================================
-   MISSION TIMER
+   MISSION TIMER — driven by live state.lastUpdate (not localStorage)
 ============================================================ */
-const sessionStart = parseInt(localStorage.getItem('nk_session_start')) || Date.now();
-localStorage.setItem('nk_session_start', sessionStart);
+let LAST_UPDATE_MS = null;  // updated by fetchState() from data.lastUpdate
 setInterval(()=>{
   const el = document.getElementById('mission-timer');
   if(!el) return;
-  const elapsed = Date.now() - sessionStart;
-  // If more than 4 hours, show "OFF SESSION"
-  if(elapsed > 4*3600000){
+  // If no live data or last sync > 3 minutes ago → team offline
+  if(!LAST_UPDATE_MS || Date.now() - LAST_UPDATE_MS > 3*60*1000){
     el.textContent = 'FUERA DE SESION';
     el.style.color = '#ef4444';
     return;
   }
-  const h = Math.floor(elapsed/3600000);
-  const m = Math.floor((elapsed%3600000)/60000);
-  const s = Math.floor((elapsed%60000)/1000);
-  el.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  // Show seconds since last heartbeat sync (proves liveness)
+  const elapsed = Date.now() - LAST_UPDATE_MS;
+  const s = Math.floor(elapsed/1000);
+  el.textContent = 'LIVE · hace ' + s + 's';
   el.style.color = '#4ade80';
 }, 1000);
+
+/* Days remaining to 2026-05-01 deadline */
+function updateDaysRemaining(){
+  const el = document.getElementById('days-remaining');
+  if(!el) return;
+  const deadline = new Date('2026-05-01T00:00:00-06:00').getTime();
+  const days = Math.max(0, Math.ceil((deadline - Date.now()) / 86400000));
+  el.textContent = days + ' dias restantes';
+}
+updateDaysRemaining();
+setInterval(updateDaysRemaining, 60000);
 
 /* ============================================================
    LIVE STATE — fetch from Supabase (remote) or state.json (local)
@@ -987,6 +996,14 @@ async function fetchState(){
       data = await res.json();
     }
     if(!data) return;
+
+    // Track freshness of the live feed for the mission timer
+    if(data.lastUpdate){
+      const t = Date.parse(data.lastUpdate);
+      if(!isNaN(t)) LAST_UPDATE_MS = t;
+    } else {
+      LAST_UPDATE_MS = Date.now();
+    }
 
     // Update agent statuses
     Object.keys(data.agents).forEach(key => {
@@ -1032,8 +1049,9 @@ async function fetchState(){
       // Will rebuild on next iteration if needed
     }
 
-    // Rebuild panels with new data
+    // Rebuild panels + marquee with new data
     buildPanels();
+    buildMarquee();
 
   } catch(e){ /* offline or CORS — use hardcoded state */ }
 }
