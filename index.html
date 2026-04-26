@@ -507,6 +507,18 @@
       border-radius: 50%;
       animation: pulse 2s ease-in-out infinite;
     }
+    .product-status.beta {
+      background: rgba(245,158,11,0.10);
+      color: #d97706;
+      border: 1px solid rgba(245,158,11,0.25);
+    }
+    .product-status.beta::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: #d97706;
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
     .product-icon {
       width: 52px;
       height: 52px;
@@ -1413,8 +1425,8 @@
       <div class="hero-content">
         <div class="hero-eyebrow">
           <span class="eyebrow-dot"></span>
-          <span data-lang="en">2 products live — MargenKit &amp; LeadFlow</span>
-          <span data-lang="es">2 productos activos — MargenKit y LeadFlow</span>
+          <span data-lang="en">MargenKit live · LeadFlow in private beta</span>
+          <span data-lang="es">MargenKit en vivo · LeadFlow en beta privada</span>
         </div>
         <h1>
           <span data-lang="en">Micro-tools that solve<br><span class="highlight">one problem perfectly</span></span>
@@ -1573,7 +1585,7 @@
 
         <!-- LeadFlow -->
         <div class="product-card">
-          <div class="product-status live">Live</div>
+          <div class="product-status beta">Beta</div>
           <div class="product-icon icon-teal">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -1592,12 +1604,12 @@
             <span>$15 USD/<span data-lang="en">mo</span><span data-lang="es">mes</span></span>
           </div>
           <p class="product-desc">
-            <span data-lang="en">Freelancers and small agencies lose deals because they forget to follow up. LeadFlow is a simple CRM that tracks your prospects and reminds you to act — no complexity, no learning curve, just close more clients.</span>
-            <span data-lang="es">Los freelancers y agencias pequeñas pierden clientes por no dar seguimiento a tiempo. LeadFlow es un CRM simple que rastrea tus prospectos y te recuerda actuar — sin complejidad, sin curva de aprendizaje, solo cierra más clientes.</span>
+            <span data-lang="en">Freelancers and small agencies lose deals because they forget to follow up. LeadFlow is a simple CRM that tracks your prospects and reminds you to act. Currently in private beta — request early access if you want to help shape it.</span>
+            <span data-lang="es">Los freelancers y agencias pequeñas pierden clientes por no dar seguimiento a tiempo. LeadFlow es un CRM simple que rastrea tus prospectos y te recuerda actuar. Actualmente en beta privada — solicita acceso anticipado si quieres ayudar a moldearlo.</span>
           </p>
           <a href="https://leadflow.nektool.com" class="product-cta-secondary">
-            <span data-lang="en">Try for free</span>
-            <span data-lang="es">Prueba gratis</span>
+            <span data-lang="en">Request early access</span>
+            <span data-lang="es">Solicitar acceso anticipado</span>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;">
               <path d="M3 8h10M9 4l4 4-4 4"/>
             </svg>
